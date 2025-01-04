@@ -54,6 +54,11 @@ const MenuListingSettings = ReactLazyPreload(
 );
 MenuListingSettings.preload();
 
+const EditMenuListing = ReactLazyPreload(
+  () => import("./pages/settings/MenuSettings/EditMenuListing")
+);
+EditMenuListing.preload();
+
 const EditMenu = ReactLazyPreload(
   () => import("./pages/settings/MenuSettings/EditMenu/EditMenu")
 );
@@ -172,6 +177,12 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Menu Listing Settings",
     path: "/menu-listing-settings",
     component: MenuListingSettings,
+  },
+  {
+    id: "Edit Menu",
+    name: "Edit Menu",
+    path: "/menu-listing-settings/edit/:id",
+    component: EditMenuListing,
   },
   {
     id: "Edit Menu",

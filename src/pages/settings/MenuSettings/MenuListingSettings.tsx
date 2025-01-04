@@ -1,6 +1,6 @@
-import { Button, Divider, Radio, Space, Table, TableProps, Tag } from 'antd';
+import { Space, Table } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface DataType {
@@ -61,11 +61,7 @@ const MenuListingSetting = () => {
     const navigate = useNavigate();
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
-            // navigate(`/menu-settings/edit/${record.key}`)
-        }
-
-        if (type === 'add') {
-            // navigate(`/menu-settings/add`)
+            navigate(`/menu-listing-settings/edit/${record.key}`)
         }
     };
 
@@ -74,10 +70,6 @@ const MenuListingSetting = () => {
             <div className='form-button-container'>
                 <div>
                     <h2>Menu Listing Settings</h2>
-                </div>
-                <div>
-                    <Button type="primary" className='form-button'>Add</Button>
-                    <Button type="primary" danger className='form-button'>Delete</Button>
                 </div>
             </div>
             <div>

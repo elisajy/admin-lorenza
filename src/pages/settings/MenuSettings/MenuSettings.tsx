@@ -1,6 +1,6 @@
-import { Button, Divider, Radio, Space, Table, TableProps, Tag } from 'antd';
+import { Button, Space, Table } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface DataType {

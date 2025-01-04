@@ -1,8 +1,8 @@
 import { Button, Card, Form } from "antd";
-import { getInputFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getInputNumberFormItem } from "../../utils/FormItems";
 
-const EditFAQSection = () => {
-    const pageTitle = 'Edit FAQ Section'
+const EditMenuListing = () => {
+    const pageTitle = 'Edit Menu Listing'
     const [form] = Form.useForm();
 
     return (
@@ -11,7 +11,7 @@ const EditFAQSection = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Card title="Edit FAQ" className="form-card-container">
+            <Card title="Edit Menu Listing" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
                         <Form
@@ -19,7 +19,8 @@ const EditFAQSection = () => {
                             form={form}
                             className="form-box"
                         >
-                            {getInputFormItem('FAQ Title', "faqTitle", 'Please fill in the FAQ Title.')}
+                            {getInputFormItem('Menu Title', "menuTitle", 'Please fill in the Menu Title.')}
+                            {getInputNumberFormItem('Menu Sequence', "sequence", 'Please fill in sequence.')}
                         </Form>
                     </div>
                 </div>
@@ -32,4 +33,4 @@ const EditFAQSection = () => {
     )
 }
 
-export default EditFAQSection
+export default EditMenuListing
