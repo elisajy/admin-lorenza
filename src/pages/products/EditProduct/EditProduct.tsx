@@ -1,25 +1,162 @@
-import { Button, Collapse, CollapseProps, Form } from "antd";
+import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useNotification from "../../../hooks/layout/useNotification";
+import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
+import { getUploadFormItem } from "../../utils/FormItems";
 import ProductInfoEdit from "./ProductInfo-edit";
-import { categoryData, colorData, finishesData, sizesData, tagsData } from "../dummyProduct";
+import PreviewImage from "../../../shared/PreviewImage";
 
 const EditProduct = () => {
-    const pageTitle = 'Product Name'
+    const navigate = useNavigate();
+    const pageTitle = 'Edit Product'
+    const { id } = useParams<{ id: string }>();
     const [form] = Form.useForm();
+    const [prdDetails, setPrdDetails] = useState<any>();
+    const [prdCategory, setPrdCategory] = useState<any>();
+    const [prdTags, setPrdTags] = useState<any>();
+    const [prdSizes, setPrdSizes] = useState<any>();
+    const [prdFinishes, setPrdFinishes] = useState<any>();
+    const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [productImage, setProductImage] = useState();
+    const [displayImg, setDisplayImg] = useState({
+        previewVisible: false, previewImage: '', previewTitle: ''
+    });
+
+    const checkFileType = (e: any) => {
+        if (e.type === "image/jpeg" || e.type === "image/png") {
+            if (e.size > 1000000) {
+                setErrorNotification('Image file size is more than 1MB. Please try a smaller size file.');
+                return Upload.LIST_IGNORE;
+            }
+            return false;
+        }
+        setErrorNotification('Only .jpg, .jpeg and .png image file format are accepted!');
+        return Upload.LIST_IGNORE;
+    };
+
+    //upload file
+    const normFile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        setProductImage(e.file);
+        return e && e.fileList;
+    };
+
+    // Display image preview
+    const handlePreview = async (file: any) => {
+        file = await handleImagePreview(file);
+        setDisplayImg({
+            previewVisible: true,
+            previewImage: file.url || file.preview,
+            previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
+        });
+    };
+
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Basic Information',
-            children: <ProductInfoEdit form={form} categoryData={categoryData()} colorData={colorData()} finishesData={finishesData()} sizesData={sizesData()} tagsData={tagsData()} />,
+            children: <ProductInfoEdit form={form} data={prdDetails} categoryData={prdCategory} tagsData={prdTags} sizesData={prdSizes} finishesData={prdFinishes} />,
         },
         {
             key: '2',
             label: 'Product Images',
-            children: <p>{pageTitle}</p>,
+            children: <div className="form-container">
+                <div className="form-wrap">
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        className="form-box">
+                        {getUploadFormItem('image', 'Product Image', normFile, handlePreview, checkFileType)}
+                    </Form>
+                </div>
+            </div>,
         },
     ];
 
     const onChange = (key: string | string[]) => {
         console.log(key);
+    };
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/product-details/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setPrdDetails(data);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.value, label: x.name, id: x.id }
+                    )
+                })
+                setPrdCategory(array);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.value, label: x.name, id: x.id }
+                    )
+                })
+                setPrdTags(array);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-sizes`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.value, label: x.name, id: x.id }
+                    )
+                })
+                setPrdSizes(array);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-finishes`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.value, label: x.name, id: x.id }
+                    )
+                })
+                setPrdFinishes(array);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue()
+        console.log(formValue);
     };
 
     return (
@@ -30,9 +167,10 @@ const EditProduct = () => {
             </div>
             <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={['1']} onChange={onChange} />;
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
+                <Button className='form-button' onClick={() => navigate('/product-listing')}>Cancel</Button>
             </div>
+            <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>
     )
 }

@@ -1,63 +1,16 @@
-import { Button, Divider, Radio, Space, Table, TableProps, Tag } from 'antd';
+import { Button, Space, Table, TableProps, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface DataType {
-    id: string;
-    prdCategory: string;
-    prdName: string;
-    prdCode: string;
-    prdSize: string;
-    updatedAt: string;
-    tags: string[];
-    key: React.Key;
-}
-
-const data: DataType[] = [
-    {
-        id: '1',
-        prdCategory: 'Tiles',
-        prdName: 'Antico',
-        prdCode: 'H39059',
-        prdSize: '300 x 300mm',
-        updatedAt: '2024-11-01',
-        tags: ['Best Selling', 'Sales'],
-        key: 1
-    },
-    {
-        id: '2',
-        prdCategory: 'Tiles',
-        prdName: 'Antico',
-        prdCode: 'H98705',
-        prdSize: '300 x 300mm',
-        updatedAt: '2024-11-02',
-        tags: ['Sales'],
-        key: 2
-    },
-    {
-        id: '3',
-        prdCategory: 'Tiles',
-        prdName: 'Antico',
-        prdCode: 'A98705',
-        prdSize: '300 x 300mm',
-        updatedAt: '2024-11-03',
-        tags: ['Sales', 'New Arrivals'],
-        key: 3
-    },
-];
-
-const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-        // can do bulk delete with this function
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    },
-};
-
+import ConfirmationDialog from '../../shared/ConfirmationDialog';
+import { TableRowSelection } from 'antd/es/table/interface';
 
 const ProductListing = () => {
     const navigate = useNavigate();
-    const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
+    const [productListing, setProductListing] = useState<any>();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/product-listing/edit/${record.key}`)
@@ -67,6 +20,73 @@ const ProductListing = () => {
             navigate(`/product-listing/add`)
         }
     }
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    const rowSelection: TableRowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+    };
+
+    useEffect(() => {
+        fetchPrd();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const fetchPrd = () => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-products`)
+            .then((response) => response.json())
+            .then((data) => {
+                const updatedData = data.length > 0 ?
+                    data.map((x: any) => {
+                        const prdCategory = x.categories.map((item: any) => item.name).join(' | ');
+                        const prdTags = x.tags.map((item: any) => item.name.toLowerCase());
+
+                        return { ...x, key: x.id, category: prdCategory, tagList: prdTags }
+                    }) : [];
+                setProductListing(updatedData);
+            }
+            );
+    };
+
+    const deletePrd = (item?: any) => {
+        setShowModal(true);
+        setConfirmation({
+            title: 'Confirm Submission?',
+            message: 'This action will delete selected products.',
+            buttonText: 'Confirm',
+            action: () => {
+                if (typeof (item) !== 'object') {
+                    //select delete
+                } else {
+                    console.log(selectedRowKeys);
+                    //bulk delete
+                }
+                setShowModal(false);
+                fetchPrd();
+            }
+        })
+
+
+        // fetch(`${import.meta.env.VITE_API_KEY}/update-about-us`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(dataBody)
+        // })
+        //     .then((response) => console.log(response))
+        //     .then((data) => {
+        //         console.log(data);
+        //         setSuccessNotification('Update Successful!');
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //         setErrorNotification('Update Failed. Please try again later.');
+        //     });
+    };
+    // /delete-product/: id
     return (
         <>
             <div className='form-button-container'>
@@ -75,24 +95,29 @@ const ProductListing = () => {
                 </div>
                 <div>
                     <Button type="primary" className='form-button' onClick={() => navAction('add')}>Add</Button>
-                    <Button type="primary" danger className='form-button'>Delete</Button>
+                    <Button type="primary" danger className='form-button' onClick={deletePrd}>Delete</Button>
                 </div>
             </div>
+            <ConfirmationDialog showModal={showModal} title={confirmation.title}
+                confirmationMessage={confirmation.message}
+                setShowModal={setShowModal}
+                action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table<DataType> dataSource={data}
-                    rowSelection={{ type: selectionType, ...rowSelection }}
+                <Table dataSource={productListing}
+                    rowSelection={rowSelection}
                 >
-                    <Column title="Category" dataIndex="prdCategory" key="prdCategory" />
-                    <Column title="Name" dataIndex="prdName" key="prdName" />
-                    <Column title="Code" dataIndex="prdCode" key="prdCode" />
-                    <Column title="Size" dataIndex="prdSize" key="prdSize" />
+                    <Column title="Category" dataIndex="category" key="category" />
+                    <Column title="Name" dataIndex="name" key="name" />
+                    <Column title="Code" dataIndex="code" key="code" />
+                    <Column title="Size" dataIndex="size" key="size" />
                     <Column
+                        width={250}
                         title="Tags"
-                        dataIndex="tags"
-                        key="tags"
-                        render={(tags: string[]) => (
+                        dataIndex="tagList"
+                        key="tagList"
+                        render={(tagList: string[]) => (
                             <>
-                                {tags.map((tag) => {
+                                {tagList.map((tag) => {
                                     let color = tag.length > 5 ? 'geekblue' : 'green';
                                     if (tag === 'loser') {
                                         color = 'volcano';
@@ -110,10 +135,10 @@ const ProductListing = () => {
                     <Column
                         title="Action"
                         key="action"
-                        render={(_: any, record: DataType) => (
+                        render={(_: any, record: any) => (
                             <Space size="middle">
                                 <a onClick={() => navAction('edit', record)}>Edit</a>
-                                <a>Delete</a>
+                                <a onClick={() => deletePrd(record)}>Delete</a>
                             </Space>
                         )}
                     />

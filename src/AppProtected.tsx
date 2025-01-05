@@ -11,8 +11,8 @@ const cookies = new Cookies();
 const AppProtected = () => {
   const { authState, authDispatch } = useAuth();
   const [collapsed, setCollapsed] = useState(window.innerWidth < 769 ? true : false);
-  const aToken: any = import.meta.env.REACT_APP_ACCESS_TOKEN || 'abf-at';
-  const rToken: any = import.meta.env.REACT_APP_REFRESH_TOKEN || 'abf-rt';
+  const aToken: any = import.meta.env.VITE_ACCESS_TOKEN || 'abf-at';
+  const rToken: any = import.meta.env.VITE_REFRESH_TOKEN || 'abf-rt';
   const navigate = useNavigate();
 
   const logout = () => {
@@ -23,8 +23,8 @@ const AppProtected = () => {
   const signOutCleanUp = () => {
     const isProd = import.meta.env.NODE_ENV === "production";
 
-    cookies.remove(aToken, { path: "/", domain: isProd ? import.meta.env.REACT_APP_COOKIE_DOMAIN : "localhost" });
-    cookies.remove(rToken, { path: "/", domain: isProd ? import.meta.env.REACT_APP_COOKIE_DOMAIN : "localhost" });
+    cookies.remove(aToken, { path: "/", domain: isProd ? import.meta.env.VITE_COOKIE_DOMAIN : "localhost" });
+    cookies.remove(rToken, { path: "/", domain: isProd ? import.meta.env.VITE_COOKIE_DOMAIN : "localhost" });
     authDispatch({ type: CLEAR_CURRENT_USER });
     authDispatch({ type: SET_LOGIN_STATUS, });
     navigate("/auth")

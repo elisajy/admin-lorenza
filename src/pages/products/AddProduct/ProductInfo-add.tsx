@@ -4,13 +4,12 @@ import { getInputFormItem, getSelectFormItem, getTagsFormItem, getTextAreaFormIt
 interface Props {
     form: any;
     categoryData: any;
-    colorData: any;
-    finishesData: any;
-    sizesData: any;
     tagsData: any;
+    sizesData: any;
+    finishesData: any;
 }
 
-const ProductInfoAdd = ({ form, categoryData, colorData, finishesData, sizesData, tagsData }: Props) => {
+const ProductInfoAdd = ({ form, categoryData, finishesData, sizesData, tagsData }: Props) => {
 
     return (
         <>
@@ -22,7 +21,10 @@ const ProductInfoAdd = ({ form, categoryData, colorData, finishesData, sizesData
                         className="form-box"
                     >
                         {getInputFormItem('Product Name', "prdName", 'Please fill in the Product Name.')}
-                        {getSelectFormItem('Product Category', 'prdCategory', 'Please select a category.', false, categoryData)}
+                        {
+                            categoryData && categoryData.length > 0 &&
+                            getTagsFormItem('Product Category', 'prdCategory', 'Please select category.', false, categoryData)
+                        }
                         {getInputFormItem('Product Variation', "prdVariation", 'Please fill in the Product Variation.')}
                         {getTextAreaFormItem('Product Description', "prdDesc", 'Please fill in the Product Description.', 6)}
 
@@ -36,10 +38,19 @@ const ProductInfoAdd = ({ form, categoryData, colorData, finishesData, sizesData
                     >
                         {getInputFormItem('Product Code', "prdCode", 'Please fill in the Product Code.')}
                         {getInputFormItem('Product Thickness', "prdThickness", 'Please fill in the Product Thickness.')}
-                        {getSelectFormItem('Product Size', 'prdSize', 'Please select a Size.', false, sizesData)}
-                        {getSelectFormItem('Product Color', 'prdColor', 'Please select a Color.', false, colorData)}
-                        {getSelectFormItem('Product Finishes', 'prdFinish', 'Please select a Finishes.', false, finishesData)}
-                        {getTagsFormItem('Product Tags', 'prdTag', 'Please select a Tag.', false, tagsData)}
+                        {
+                            sizesData && sizesData.length > 0 &&
+                            getSelectFormItem('Product Size', 'prdSize', 'Please select a Product Size.', false, sizesData)
+                        }
+                        {
+                            finishesData && finishesData.length > 0 &&
+                            getSelectFormItem('Product Finishes', 'prdFinish', 'Please select a Product Finishes.', false, finishesData)
+                        }
+                        {getInputFormItem('Product Color', "prdColor", 'Please fill in the Product Color.')}
+                        {
+                            tagsData && tagsData.length > 0 &&
+                            getTagsFormItem('Product Tags', 'prdTag', 'Please select Tag.', false, tagsData)
+                        }
                     </Form>
                 </div>
             </div>

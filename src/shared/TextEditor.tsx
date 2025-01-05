@@ -37,8 +37,8 @@ interface OnChangeHandler {
 }
 
 type Props = {
-    value: string;
-    onChange: OnChangeHandler;
+    value?: string;
+    onChange?: OnChangeHandler;
     placeholder?: string;
     className?: any;
 };

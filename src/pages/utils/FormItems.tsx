@@ -67,7 +67,6 @@ export const getSelectFormItem = (
     const finalOptions = includeAll
         ? [{ label: "All", value: "" }, ...options]
         : options;
-    console.log(finalOptions);
     return (
         <Form.Item className={className ?? ''} label={label} name={name} rules={rules}>
             <Select placeholder={placeholder} style={{ minWidth }} onChange={onChange} allowClear={allowClear}>
@@ -130,7 +129,7 @@ export const getTagsFormItem = (
             <Select mode="tags" placeholder={placeholder} style={{ minWidth }} onChange={onChange}>
                 {
                     finalOptions.map((x: any) => {
-                        return <Select.Option value={x.val}>{x.label}</Select.Option>
+                        return <Select.Option value={x.id}>{x.label}</Select.Option>
                     }
                     )
                 }
