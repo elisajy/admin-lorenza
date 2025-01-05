@@ -1,48 +1,37 @@
 import { Button, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
-import { TableRowSelection } from "antd/es/table/interface";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import ConfirmationDialog from "../../shared/ConfirmationDialog";
 
-const ProductCategories = () => {
+const Projects = () => {
     const navigate = useNavigate();
-    const [productCategories, setProductCategories] = useState<any>();
     const [showModal, setShowModal] = useState(false);
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
-    const [refreshKey, setRefreshKey] = useState(0);
+    const [inspirationList, setInspirationList] = useState<any>([]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
-            navigate(`/product-categories/edit/${record.key}`)
+            navigate(`/project-settings/edit/${record.key}`)
         }
 
         if (type === 'add') {
-            navigate(`/product-categories/add`)
+            navigate(`/project-settings/add`)
         }
     }
 
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-
-    const rowSelection: TableRowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-    };
-
     useEffect(() => {
-        fetchCategory();
+        fetchInspirations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshKey]);
 
-    const fetchCategory = () => {
-        setProductCategories([]);
+    const fetchInspirations = () => {
+        setInspirationList([]);
         try {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-categories-no-level`, {
+            fetch(`${import.meta.env.VITE_API_KEY}/all-inspirations`, {
                 method: 'GET',
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -57,27 +46,27 @@ const ProductCategories = () => {
                         data.map((x: any) => {
                             return { ...x, key: x.id }
                         }) : [];
-                    setProductCategories(updatedData);
+                    setInspirationList(updatedData);
                 }
                 );
         } catch (error) {
-            console.error("Error fetching Product Categories:", error);
+            console.error("Error fetching Inspiration:", error);
         }
     };
 
-    const deletion = (record?: any) => {
+    const deletion = (record: any) => {
         setShowModal(true);
         setConfirmation({
             title: 'Confirm Submission?',
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                fetch(`${import.meta.env.VITE_API_KEY}/delete-category/${record.id}`, {
+                fetch(`${import.meta.env.VITE_API_KEY}/delete-inspiration/${record.id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(selectedRowKeys)
+                    body: JSON.stringify({ id: record.id })
                 })
                     .then((response) => {
                         if (response.status === 204) {
@@ -86,7 +75,7 @@ const ProductCategories = () => {
                     }
                     )
                     .catch((error) => {
-                        console.log('Delete Category error:', error);
+                        console.log('Delete Inspiration error:', error);
                         setErrorNotification('Delete Failed. Please try again later.');
                     });
 
@@ -100,7 +89,7 @@ const ProductCategories = () => {
         <>
             <div className='form-button-container'>
                 <div>
-                    <h2>Product Categories</h2>
+                    <h2>Projects</h2>
                 </div>
                 <div>
                     <Button type="primary" className='form-button' onClick={() => navAction('add')}>Add</Button>
@@ -111,11 +100,9 @@ const ProductCategories = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={productCategories}
-                    // rowSelection={rowSelection}
-                >
-                    <Column title="Name" dataIndex="name" key="categoryName" />
-                    <Column title="Main Category" dataIndex="mainCategoryName" key="mainCategoryName" />
+                <Table dataSource={inspirationList}                >
+                    <Column title="Title" dataIndex="title" key="name" />
+                    <Column title="Path" dataIndex="path" key="name" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />
                     <Column
                         title="Action"
@@ -132,6 +119,6 @@ const ProductCategories = () => {
             </div>
         </>
     )
-};
+}
 
-export default ProductCategories
+export default Projects

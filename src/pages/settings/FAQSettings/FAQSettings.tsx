@@ -73,16 +73,38 @@ const FAQSettings = () => {
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                if (typeof (record) === 'object') {
-                    //select delete
-                    console.log(record);
-                } else {
-                    fetch(`${import.meta.env.VITE_API_KEY}/delete-faq-question`, {
+                if (!!record && record.id) {
+                    let arr = [record.id];
+                    const dataBody = {
+                        questions: arr
+                    }
+                    fetch(`${import.meta.env.VITE_API_KEY}/delete-faq-questions`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(selectedRowKeys)
+                        body: JSON.stringify(dataBody)
+                    })
+                        .then((response) => {
+                            if (response.status === 204) {
+                                setSuccessNotification('Delete Successful!')
+                            }
+                        }
+                        )
+                        .catch((error) => {
+                            console.log('Delete FAQ Question error:', error);
+                            setErrorNotification('Delete Failed. Please try again later.');
+                        });
+                } else {
+                    const dataBody = {
+                        questions: selectedRowKeys
+                    }
+                    fetch(`${import.meta.env.VITE_API_KEY}/delete-faq-questions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(dataBody)
                     })
                         .then((response) => {
                             if (response.status === 204) {

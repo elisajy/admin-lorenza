@@ -1,9 +1,8 @@
 import { Button, Card, Form } from "antd";
-import { getInputFormItem, getSelectFormItem } from "../../utils/FormItems";
-import { categoryData } from "../dummyProduct";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
-import { useEffect, useState } from "react";
+import { getInputFormItem, getSelectFormItem } from "../../utils/FormItems";
 
 const EditCategory = () => {
     const pageTitle = 'Category Name'
@@ -39,7 +38,6 @@ const EditCategory = () => {
         fetch(`${import.meta.env.VITE_API_KEY}/category-details/${id}`)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 form.setFieldsValue({
                     'name': data.name,
                     'description': data.description,
@@ -92,7 +90,8 @@ const EditCategory = () => {
                             {getInputFormItem('Category Description', "description", 'Please fill in the Category Description.')}
                             {
                                 mainCategoryData && mainCategoryData.length > 0 &&
-                                getSelectFormItem('Main Category', 'mainCategoryId', 'Please select a Main Category.', false, mainCategoryData)}
+                                getSelectFormItem('Main Category', 'mainCategoryId', 'Please select a Main Category.', false, mainCategoryData)
+                            }
                         </Form>
                     </div>
                 </div>

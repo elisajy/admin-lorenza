@@ -3,11 +3,19 @@ import MenuInfo from "./MenuInfo";
 import { categoryData, menuChild } from "../../../products/dummyProduct";
 import ChildSetting from "./ChildSetting";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useNotification from "../../../../hooks/layout/useNotification";
 
 const EditMenu = () => {
-    const pageTitle = 'Main Title Name'
+    const navigate = useNavigate();
+    const pageTitle = 'Edit Menu'
     const [form] = Form.useForm();
+    const { id } = useParams<{ id: string }>();
     const [childMenu, setChildMenu] = useState<any>();
+    const [sideNavDetails, setSideNavDetails] = useState<any>();
+    const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [prdCategory, setPrdCategory] = useState<any>();
+    const [tableNameArr, setTableNameArr] = useState<any>([]);
 
     //when open drawer modify the data to val and label
     useEffect(() => {
@@ -25,18 +33,44 @@ const EditMenu = () => {
         {
             key: '1',
             label: 'Basic Information',
-            children: <MenuInfo form={form} categoryData={categoryData()} />,
+            children: <MenuInfo form={form} data={sideNavDetails} setTableNameArr={setTableNameArr} tableNameArr={tableNameArr}/>,
         },
         {
             key: '2',
             label: 'Child Settings',
-            children: <ChildSetting childMenu={childMenu}/>,
+            children: <ChildSetting childMenu={childMenu} data={sideNavDetails} tableNameArr={tableNameArr}/>,
         },
     ];
 
     const onChange = (key: string | string[]) => {
         console.log(key);
     };
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/products-sideNavs-details/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setSideNavDetails(data);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.id, label: x.name }
+                    )
+                })
+                setPrdCategory(array);
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
@@ -46,8 +80,8 @@ const EditMenu = () => {
             </div>
             <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={['1']} onChange={onChange} />;
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                {/* <Button type="primary" className='form-button' onClick={submitForm}>Save</Button> */}
+                <Button className='form-button' onClick={() => navigate('/menu-settings')}>Cancel</Button>
             </div>
         </>
     )

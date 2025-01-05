@@ -13,6 +13,8 @@ interface DataType {
 
 interface Props {
     childMenu: any;
+    data: any;
+    tableNameArr: any;
 }
 
 const rowSelection: TableProps<DataType>['rowSelection'] = {
@@ -23,9 +25,12 @@ const rowSelection: TableProps<DataType>['rowSelection'] = {
 };
 
 
-const childSetting = ({ childMenu }: Props) => {
+const childSetting = ({ childMenu, data, tableNameArr }: Props) => {
     const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
     const [open, setOpen] = useState(false);
+    const [subNavs, setSubNavs] = useState<any>([]);
+
+    console.log(tableNameArr);
 
     const showDrawer = () => {
         setOpen(true);
@@ -34,6 +39,12 @@ const childSetting = ({ childMenu }: Props) => {
     const onClose = () => {
         setOpen(false);
     };
+
+    useEffect(() => {
+        if (!!data) {
+            setSubNavs(data.subNavs)
+        }
+    }, [data]);
 
     return (
         <>
@@ -44,7 +55,7 @@ const childSetting = ({ childMenu }: Props) => {
                 </div>
             </div>
             <div>
-                <Table<DataType> dataSource={menuChild()}
+                <Table dataSource={subNavs}
                     rowSelection={{ type: selectionType, ...rowSelection }}
                 >
                     <Column title="Child Name" dataIndex="name" key="name" />
@@ -52,7 +63,7 @@ const childSetting = ({ childMenu }: Props) => {
                     <Column
                         title="Action"
                         key="action"
-                        render={(_: any, record: DataType) => (
+                        render={(_: any, record: any) => (
                             <Space size="middle">
                                 <a>Delete</a>
                             </Space>
@@ -80,7 +91,7 @@ const childSetting = ({ childMenu }: Props) => {
                 }
             >
                 <Form layout="vertical">
-                    {getTagsFormItem('Product Category', 'prdCategory', 'Please select a category.', false, childMenu)}
+                    {getTagsFormItem('Child', 'childNavs', 'Please select child.', false, childMenu)}
                 </Form>
             </Drawer>
         </>

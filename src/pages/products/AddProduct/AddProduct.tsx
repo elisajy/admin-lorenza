@@ -67,7 +67,7 @@ const AddProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('image', 'Product Image', normFile, handlePreview, checkFileType)}
+                        {getUploadFormItem('image', 'Product Image', normFile, handlePreview, checkFileType, [])}
                     </Form>
                 </div>
             </div>,
@@ -79,13 +79,13 @@ const AddProduct = () => {
     };
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+        fetch(`${import.meta.env.VITE_API_KEY}/all-categories-no-level`)
             .then((response) => response.json())
             .then((data) => {
-                let array: { val: any; label: any; id: any }[] = [];
+                let array: { val: any; label: any; }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name }
                     )
                 })
                 setPrdCategory(array);
@@ -95,13 +95,13 @@ const AddProduct = () => {
     }, []);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
+        fetch(`${import.meta.env.VITE_API_KEY}/all-tags-no-level`)
             .then((response) => response.json())
             .then((data) => {
-                let array: { val: any; label: any; id: any }[] = [];
+                let array: { val: any; label: any; }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name }
                     )
                 })
                 setPrdTags(array);
@@ -117,7 +117,7 @@ const AddProduct = () => {
                 let array: { val: any; label: any; id: any }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name, id: x.id }
                     )
                 })
                 setPrdSizes(array);
@@ -133,7 +133,7 @@ const AddProduct = () => {
                 let array: { val: any; label: any; id: any }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name, id: x.id }
                     )
                 })
                 setPrdFinishes(array);

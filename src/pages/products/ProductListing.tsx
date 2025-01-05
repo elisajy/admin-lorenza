@@ -4,11 +4,14 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationDialog from '../../shared/ConfirmationDialog';
+import useNotification from '../../hooks/layout/useNotification';
 
 const ProductListing = () => {
     const navigate = useNavigate();
     const [productListing, setProductListing] = useState<any>();
     const [showModal, setShowModal] = useState(false);
+    const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [refreshKey, setRefreshKey] = useState(0);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
     const navAction = (type: any, record?: any) => {
@@ -50,43 +53,38 @@ const ProductListing = () => {
             );
     };
 
-    const deletePrd = (item?: any) => {
+    const deletion = (record?: any) => {
         setShowModal(true);
         setConfirmation({
             title: 'Confirm Submission?',
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
-            action: () => {
-                if (typeof (item) !== 'object') {
-                    //select delete
-                } else {
-                    console.log(selectedRowKeys);
-                    //bulk delete
-                }
+            action: async () => {
+                
+                // fetch(`${import.meta.env.VITE_API_KEY}/delete-product/${record.id}`, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({ id: record.id })
+                // })
+                //     .then((response) => {
+                //         if (response.status === 204) {
+                //             setSuccessNotification('Delete Successful!')
+                //         }
+                //     }
+                //     )
+                //     .catch((error) => {
+                //         console.log('Delete FAQ Section error:', error);
+                //         setErrorNotification('Delete Failed. Please try again later.');
+                //     });
+
                 setShowModal(false);
-                fetchPrd();
+                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
-
-
-        // fetch(`${import.meta.env.VITE_API_KEY}/update-about-us`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(dataBody)
-        // })
-        //     .then((response) => console.log(response))
-        //     .then((data) => {
-        //         console.log(data);
-        //         setSuccessNotification('Update Successful!');
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //         setErrorNotification('Update Failed. Please try again later.');
-        //     });
     };
-    // /delete-product/: id
+
     return (
         <>
             <div className='form-button-container'>
@@ -95,7 +93,7 @@ const ProductListing = () => {
                 </div>
                 <div>
                     <Button type="primary" className='form-button' onClick={() => navAction('add')}>Add</Button>
-                    <Button type="primary" danger className='form-button' onClick={deletePrd}>Delete</Button>
+                    <Button type="primary" danger className='form-button' onClick={deletion}>Delete</Button>
                 </div>
             </div>
             <ConfirmationDialog showModal={showModal} title={confirmation.title}
@@ -138,7 +136,7 @@ const ProductListing = () => {
                         render={(_: any, record: any) => (
                             <Space size="middle">
                                 <a onClick={() => navAction('edit', record)}>Edit</a>
-                                <a onClick={() => deletePrd(record)}>Delete</a>
+                                <a onClick={() => deletion(record)}>Delete</a>
                             </Space>
                         )}
                     />

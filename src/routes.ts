@@ -129,6 +129,26 @@ const EditPartner = ReactLazyPreload(
 );
 EditPartner.preload();
 
+const Inspirations = ReactLazyPreload(
+  () => import("./pages/inspirations/Inspirations")
+);
+Inspirations.preload();
+
+const AddInspiration = ReactLazyPreload(
+  () => import("./pages/inspirations/AddInspiration")
+);
+AddInspiration.preload();
+
+const EditInspiration = ReactLazyPreload(
+  () => import("./pages/inspirations/EditInspiration")
+);
+EditInspiration.preload();
+
+const Projects = ReactLazyPreload(
+  () => import("./pages/projects/Projects")
+);
+Projects.preload();
+
 export const protectedRoutes: RouteInfo[] = [
   {
     id: "Products",
@@ -267,5 +287,29 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Edit Partner",
     path: "/partners/edit/:id",
     component: EditPartner,
+  },
+  {
+    id: "Inspiration",
+    name: "Inspiration",
+    path: "/inspiration-settings",
+    component: Inspirations,
+  },
+  {
+    id: "Add Inspiration",
+    name: "Add Inspiration",
+    path: "/inspiration-settings/add",
+    component: AddInspiration,
+  },
+  {
+    id: "Edit Inspiration",
+    name: "Edit Inspiration",
+    path: "/inspiration-settings/edit/:id",
+    component: EditInspiration,
+  },
+  {
+    id: "Projects",
+    name: "Projects",
+    path: "/project-settings",
+    component: Projects,
   },
 ];

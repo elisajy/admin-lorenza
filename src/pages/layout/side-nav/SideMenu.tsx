@@ -103,14 +103,14 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             icon: 'SettingOutlined',
             parentId: 3
         },
-        {
-            id: 32,
-            name: 'Menu Listing Settings',
-            route: '/menu-listing-settings',
-            order: 1,
-            icon: 'SettingOutlined',
-            parentId: 3
-        },
+        // {
+        //     id: 32,
+        //     name: 'Menu Listing Settings',
+        //     route: '/menu-listing-settings',
+        //     order: 1,
+        //     icon: 'SettingOutlined',
+        //     parentId: 3
+        // },
         {
             id: 4,
             name: 'FAQ',
@@ -184,12 +184,28 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             parentId: null,
         },
         {
+            id: 21,
+            name: 'Inspiration Settings',
+            route: '/inspiration-settings',
+            order: 4,
+            icon: 'BulbOutlined',
+            parentId: 2,
+        },
+        {
             id: 6,
             name: 'Projects',
             route: '/projects',
             order: 4,
             icon: 'ProfileOutlined',
             parentId: null,
+        },
+        {
+            id: 6,
+            name: 'Project Settings',
+            route: '/project-settings',
+            order: 4,
+            icon: 'ProfileOutlined',
+            parentId: 6,
         },
         {
             id: 7,

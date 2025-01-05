@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
+import PreviewImage from "../../../shared/PreviewImage";
 import { getUploadFormItem } from "../../utils/FormItems";
 import ProductInfoEdit from "./ProductInfo-edit";
-import PreviewImage from "../../../shared/PreviewImage";
 
 const EditProduct = () => {
     const navigate = useNavigate();
@@ -18,7 +18,8 @@ const EditProduct = () => {
     const [prdSizes, setPrdSizes] = useState<any>();
     const [prdFinishes, setPrdFinishes] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [productImage, setProductImage] = useState();
+    const [productImage, setProductImage] = useState<any>();
+    const [mockedImage, setMockedImage] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
@@ -36,11 +37,19 @@ const EditProduct = () => {
     };
 
     //upload file
-    const normFile = (e: any) => {
+    const normPIFile = (e: any) => {
         if (Array.isArray(e)) {
             return e;
         }
         setProductImage(e.file);
+        return e && e.fileList;
+    };
+
+    const normMIFile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        setMockedImage(e.file);
         return e && e.fileList;
     };
 
@@ -69,11 +78,25 @@ const EditProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('image', 'Product Image', normFile, handlePreview, checkFileType)}
+                        {getUploadFormItem('image', 'Product Image', normPIFile, handlePreview, checkFileType, (prdDetails?.images || []))}
                     </Form>
                 </div>
             </div>,
         },
+        // {
+        //     key: '3',
+        //     label: 'Mock Images',
+        //     children: <div className="form-container">
+        //         <div className="form-wrap">
+        //             <Form
+        //                 layout="vertical"
+        //                 form={form}
+        //                 className="form-box">
+        //                 {getUploadFormItem('image', 'Mocked Image', normMIFile, handlePreview, checkFileType, (prdDetails?.mockedImages || []))}
+        //             </Form>
+        //         </div>
+        //     </div>,
+        // },
     ];
 
     const onChange = (key: string | string[]) => {
@@ -91,13 +114,13 @@ const EditProduct = () => {
     }, []);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+        fetch(`${import.meta.env.VITE_API_KEY}/all-categories-no-level`)
             .then((response) => response.json())
             .then((data) => {
-                let array: { val: any; label: any; id: any }[] = [];
+                let array: { val: any; label: any; }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name }
                     )
                 })
                 setPrdCategory(array);
@@ -107,13 +130,13 @@ const EditProduct = () => {
     }, []);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
+        fetch(`${import.meta.env.VITE_API_KEY}/all-tags-no-level`)
             .then((response) => response.json())
             .then((data) => {
-                let array: { val: any; label: any; id: any }[] = [];
+                let array: { val: any; label: any; }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name }
                     )
                 })
                 setPrdTags(array);
@@ -129,7 +152,7 @@ const EditProduct = () => {
                 let array: { val: any; label: any; id: any }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name, id: x.id }
                     )
                 })
                 setPrdSizes(array);
@@ -145,7 +168,7 @@ const EditProduct = () => {
                 let array: { val: any; label: any; id: any }[] = [];
                 data.map((x: any) => {
                     array.push(
-                        { val: x.value, label: x.name, id: x.id }
+                        { val: x.id, label: x.name, id: x.id }
                     )
                 })
                 setPrdFinishes(array);
@@ -154,11 +177,90 @@ const EditProduct = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const submitForm = () => {
-        const formValue = form.getFieldsValue()
-        console.log(formValue);
+    const uploadProductImage = async (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-products-images/${id}`, {
+            method: 'POST',
+            mode: 'no-cors',  // Set no-cors mode here
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Upload Product Images Successful!');
+                    navigate('/product-listing');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Product Images error:', error);
+                setErrorNotification('Upload Product Images Failed. Please try again later.');
+            });
+
     };
 
+    const uploadMockImage = async (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-mocked-images/${id}`, {
+            method: 'POST',
+            mode: 'no-cors',  // Set no-cors mode here
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Upload Mocked Images Successful!');
+                    navigate('/product-listing');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Mocked Images error:', error);
+                setErrorNotification('Upload Mocked Images Failed. Please try again later.');
+            });
+
+    };
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue()
+        const dataBody = {
+            name: formValue.prdName,
+            code: formValue.prdCode,
+            description: formValue.prdDesc,
+            variation: formValue.prdVariation,
+            thickness: formValue.prdThickness,
+            color: formValue.prdColor,
+            tags: formValue.prdTag,
+            categories: formValue.prdCategory,
+            size: formValue.prdSize,
+            finish: formValue.prdFinish
+        }
+        fetch(`${import.meta.env.VITE_API_KEY}/update-product`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...dataBody,
+                id: id
+            })
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Update Successful!');
+                    uploadProductImage(productImage);
+                    uploadMockImage(mockedImage);
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Insert Inspiration error:', error);
+                setErrorNotification('Insert Failed. Please try again later.');
+            });
+    };
+ 
     return (
         <>
             <div style={{ textAlign: 'left' }}>

@@ -14,9 +14,6 @@ interface Props {
 
 const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finishesData }: Props) => {
     useEffect(() => {
-        const prdTags = data?.tags.map((item: any) => Number(item.tagId));
-        const prdCategories = data?.categories.map((item: any) => Number(item.categoryId));
-
         form.setFieldsValue({
             prdName: data?.name,
             prdCode: data?.code,
@@ -26,8 +23,8 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
             prdSize: data?.size,
             prdColor: data?.color,
             prdVariation: data?.variation,
-            prdTag: prdTags,
-            prdCategory: prdCategories
+            prdTag: data?.tags,
+            prdCategory: data?.categories
         });
     }, [data]);
 
@@ -40,7 +37,7 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
                         form={form}
                         className="form-box"
                     >
-                        {getInputFormItem('Product Name', "prdName", 'Please fill in the Product Name.')}
+                        {getInputFormItem('Product Name', "prdName", 'Please fill in the Product Name.', '', true)}
                         {
                             categoryData && categoryData.length > 0 &&
                             getTagsFormItem('Product Category', 'prdCategory', 'Please select category.', false, categoryData)
@@ -56,7 +53,7 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
                         form={form}
                         className="form-box"
                     >
-                        {getInputFormItem('Product Code', "prdCode", 'Please fill in the Product Code.')}
+                        {getInputFormItem('Product Code', "prdCode", 'Please fill in the Product Code.', '', true)}
                         {getInputFormItem('Product Thickness', "prdThickness", 'Please fill in the Product Thickness.')}
                         {
                             sizesData && sizesData.length > 0 &&
@@ -66,7 +63,7 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
                             finishesData && finishesData.length > 0 &&
                             getSelectFormItem('Product Finishes', 'prdFinish', 'Please select a Product Finishes.', false, finishesData)
                         }
-                        {getInputFormItem('Product Color', "prdColor", 'Please fill in the Product Color.')}
+                        {getInputFormItem('Product Color', "prdColor", 'Please fill in the Product Color.', '', true)}
                         {
                             tagsData && tagsData.length > 0 &&
                             getTagsFormItem('Product Tags', 'prdTag', 'Please select Tag.', false, tagsData)

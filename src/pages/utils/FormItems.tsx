@@ -129,7 +129,7 @@ export const getTagsFormItem = (
             <Select mode="tags" placeholder={placeholder} style={{ minWidth }} onChange={onChange}>
                 {
                     finalOptions.map((x: any) => {
-                        return <Select.Option value={x.id}>{x.label}</Select.Option>
+                        return <Select.Option value={x.val}>{x.label}</Select.Option>
                     }
                     )
                 }
@@ -143,11 +143,46 @@ export const getUploadFormItem = (
     label: string,
     normFile: (e: any) => any, // Corrected the type for a function
     handlePreview: (e: any) => any, // Corrected the type for a function
-    checkFileType: (e: any) => any // Corrected the type for a file validation function
+    checkFileType: (e: any) => any, // Corrected the type for a file validation function
+    initialImageUrls?: any
 ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
     return (
         <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
-            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }} >
+            <Upload name="image" action="" multiple listType="picture" beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
+                defaultFileList={
+                    initialImageUrls && initialImageUrls.length > 0 ?
+                        initialImageUrls.map((url: any, index: any) => ({
+                            uid: `-${index + 1}`,
+                            name: `image_${index + 1}.png`,
+                            status: 'done',
+                            url: url
+                        }))
+                        :
+                        []
+                }
+            >
+                <Button icon={<UploadOutlined />}>Click To Upload</Button>
+            </Upload>
+        </Form.Item>
+    )
+}
+
+export const getLimitUploadFormItem = (
+    formItemName: string,
+    label: string,
+    normFile: (e: any) => any, // Corrected the type for a function
+    handlePreview: (e: any) => any, // Corrected the type for a function
+    checkFileType: (e: any) => any, // Corrected the type for a file validation function
+    initialImageUrl?: any
+): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
+    return (
+        <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
+            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }} fileList={initialImageUrl ? [{
+                uid: '-1',
+                name: 'existing_image.png',
+                status: 'done',
+                url: initialImageUrl
+            }] : []}>
                 <Button icon={<UploadOutlined />}>Click To Upload</Button>
             </Upload>
         </Form.Item>

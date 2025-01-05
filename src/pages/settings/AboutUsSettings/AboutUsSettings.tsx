@@ -55,13 +55,14 @@ const AboutUsSettings = () => {
             },
             body: JSON.stringify(dataBody)
         })
-            .then((response) => console.log(response))
-            .then((data) => {
-                console.log(data);
-                setSuccessNotification('Update Successful!');
-            })
+            .then((response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Update Successful!')
+                }
+            }
+            )
             .catch((error) => {
-                console.log(error);
+                console.log('Update FAQ Question error:', error);
                 setErrorNotification('Update Failed. Please try again later.');
             });
     };
