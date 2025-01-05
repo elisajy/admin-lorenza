@@ -1,24 +1,49 @@
 import { Button, Card, Form } from "antd";
-import { getInputFormItem, getSelectFormItem, getTextAreaFormItem } from "../../utils/FormItems";
-import { faqType } from "../../products/dummyProduct";
 import { useEffect, useState } from "react";
+import { getInputFormItem, getSelectFormItem, getTextAreaFormItem } from "../../utils/FormItems";
+import { useNavigate } from "react-router-dom";
 
 const AddFAQ = () => {
-    const pageTitle = 'Add FAQ Title'
+    const pageTitle = 'Add FAQ Question'
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const [faqTypeList, setFAQTypeList] = useState<any>();
 
     useEffect(() => {
-        const typeList = faqType();
-        let array: { val: any; label: any; }[] = [];
-        typeList.map((x: any) => {
-            array.push(
-                { val: x.id, label: x.name }
-            )
-        })
+        fetch(`${import.meta.env.VITE_API_KEY}/all-faq-sections`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.id, label: x.name }
+                    )
+                })
 
-        setFAQTypeList(array);
+                setFAQTypeList(array);
+            }
+            );
     }, []);
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        fetch(`${import.meta.env.VITE_API_KEY}/add-faq-question`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formValue)
+        })
+            .then((response) => console.log(response))
+            .then((data) => {
+                console.log(data);
+                // setSuccessNotification('Update Successful!');
+            })
+            .catch((error) => {
+                console.log(error);
+                // setErrorNotification('Update Failed. Please try again later.');
+            });
+    };
 
     return (
         <>
@@ -26,7 +51,7 @@ const AddFAQ = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Card title="Add FAQ" className="form-card-container">
+            <Card title="Add FAQ Question" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
                         <Form
@@ -48,8 +73,8 @@ const AddFAQ = () => {
                 </div>
             </Card>
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
+                <Button className='form-button' onClick={() => navigate('/faq-settings')}>Cancel</Button>
             </div>
         </>
     )

@@ -1,6 +1,6 @@
 import { Button, Space, Table, TableProps } from "antd";
 import Column from "antd/es/table/Column";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface DataType {
@@ -61,6 +61,30 @@ const ProductCategories = () => {
             navigate(`/product-categories/add`)
         }
     }
+
+    useEffect(() => {
+        fetchCategory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const fetchCategory = () => {
+        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                // const updatedData = data.length > 0 ?
+                //     data.map((x: any) => {
+                //         const prdCategory = x.categories.map((item: any) => item.name).join(' | ');
+                //         const prdTags = x.tags.map((item: any) => item.name.toLowerCase());
+
+                //         return { ...x, key: x.id, category: prdCategory, tagList: prdTags }
+                //     }) : [];
+                // setProductListing(updatedData);
+            }
+            );
+    };
+
+
     return (
         <>
             <div className='form-button-container'>

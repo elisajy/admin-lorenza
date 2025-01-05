@@ -44,7 +44,6 @@ const layoutContext = createContext<{ layoutState: LayoutState; layoutDispatch: 
 
 export const LayoutProvider = ({ children }: any) => {
     const [layoutState, layoutDispatch] = useReducer(reducer, INITIAL_STATE);
-
     return (
         <layoutContext.Provider value={{ layoutState, layoutDispatch }} >
             {children}

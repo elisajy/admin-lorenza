@@ -1,9 +1,9 @@
-import { Button, Space, Table, TableProps, Tag } from 'antd';
+import { Button, Space, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
+import { TableRowSelection } from 'antd/es/table/interface';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationDialog from '../../shared/ConfirmationDialog';
-import { TableRowSelection } from 'antd/es/table/interface';
 
 const ProductListing = () => {
     const navigate = useNavigate();
@@ -54,7 +54,7 @@ const ProductListing = () => {
         setShowModal(true);
         setConfirmation({
             title: 'Confirm Submission?',
-            message: 'This action will delete selected products.',
+            message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: () => {
                 if (typeof (item) !== 'object') {

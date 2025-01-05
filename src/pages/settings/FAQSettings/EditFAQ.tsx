@@ -1,24 +1,63 @@
 import { Button, Card, Form } from "antd";
 import { getInputFormItem, getSelectFormItem, getTextAreaFormItem } from "../../utils/FormItems";
-import { faqType } from "../../products/dummyProduct";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditFAQ = () => {
-    const pageTitle = 'Edit FAQ Title'
+    const pageTitle = 'Edit FAQ Question'
+    const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
     const [form] = Form.useForm();
     const [faqTypeList, setFAQTypeList] = useState<any>();
 
     useEffect(() => {
-        const typeList = faqType();
-        let array: { val: any; label: any; }[] = [];
-        typeList.map((x: any) => {
-            array.push(
-                { val: x.id, label: x.name }
-            )
-        })
+        fetch(`${import.meta.env.VITE_API_KEY}/all-faq-sections`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: x.id, label: x.name }
+                    )
+                })
 
-        setFAQTypeList(array);
+                setFAQTypeList(array);
+            }
+            );
     }, []);
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_KEY}/faq-question-details/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                form.setFieldsValue({
+                    'sectionId': data.sectionId,
+                    'question': data.question,
+                    'answer': data.answer,
+                })
+            }
+            );
+    }, []);
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        fetch(`${import.meta.env.VITE_API_KEY}/update-faq-question`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formValue)
+        })
+            .then((response) => console.log(response))
+            .then((data) => {
+                console.log(data);
+                // setSuccessNotification('Update Successful!');
+            })
+            .catch((error) => {
+                console.log(error);
+                // setErrorNotification('Update Failed. Please try again later.');
+            });
+    };
 
     return (
         <>
@@ -26,7 +65,7 @@ const EditFAQ = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Card title="Edit FAQ" className="form-card-container">
+            <Card title="Edit FAQ Question" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
                         <Form
@@ -36,20 +75,20 @@ const EditFAQ = () => {
                         >
                             {
                                 faqTypeList && faqTypeList.length > 0 ?
-                                    getSelectFormItem('FAQ Type', 'faqTypeId', 'Please select a FAQ Type.', false, faqTypeList)
+                                    getSelectFormItem('FAQ Type', 'sectionId', 'Please select a FAQ Type.', false, faqTypeList)
                                     :
                                     null
                             }
-                            {getInputFormItem('FAQ Title', "faqTitle", 'Please fill in the FAQ Title.')}
-                            {getTextAreaFormItem('FAQ Description', "faqDesc", 'Please fill in the FAQ Description.', 6)}
+                            {getInputFormItem('FAQ Question', "question", 'Please fill in the FAQ Question.')}
+                            {getTextAreaFormItem('FAQ Answer', "answer", 'Please fill in the FAQ Answer.', 8)}
 
                         </Form>
                     </div>
                 </div>
             </Card>
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
+                <Button className='form-button' onClick={() => navigate('/faq-settings')}>Cancel</Button>
             </div>
         </>
     )
