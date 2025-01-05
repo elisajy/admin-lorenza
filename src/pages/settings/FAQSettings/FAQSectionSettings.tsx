@@ -93,7 +93,6 @@ const FAQSectionSettings = () => {
                 </div>
                 <div>
                     <Button type="primary" className='form-button' onClick={() => navAction('add')}>Add</Button>
-                    <Button type="primary" danger className='form-button'>Delete</Button>
                 </div>
             </div>
             <ConfirmationDialog showModal={showModal} title={confirmation.title}
