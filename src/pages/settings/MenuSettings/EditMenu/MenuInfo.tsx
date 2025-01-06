@@ -7,61 +7,48 @@ interface Props {
     data: any;
     setTableNameArr: React.Dispatch<React.SetStateAction<any>>;
     tableNameArr: any;
+    setSelectedTableName: React.Dispatch<React.SetStateAction<any>>;
+    selectedTableName: any;
+    setChildArray: React.Dispatch<React.SetStateAction<any>>;
+    childArray: any;
 }
 
-const MenuInfo = ({ form, data, setTableNameArr, tableNameArr }: Props) => {
-    const [selectedTableName, setSelectedTableName] = useState<any>();
-
-    const tableName = [
-        {
-            id: 1,
-            val: 'categories',
-            label: 'Categories',
-        },
-        {
-            id: 2,
-            val: 'finishes',
-            label: 'Finishes',
-        },
-        {
-            id: 3,
-            val: 'tags',
-            label: 'Tags',
-        },
-        {
-            id: 4,
-            val: 'sizes',
-            label: 'Sizes'
-        },
-        {
-            id: 5,
-            val: 'colors',
-            label: 'Colors'
-        }
-    ]
+const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableName, selectedTableName, setChildArray, childArray }: Props) => {
     useEffect(() => {
         form.setFieldsValue({
-            name: data?.name,
-            mainSideNavId: data?.mainSideNavId,
+            menuName: data?.name,
             sequence: data?.sequence
         });
+        loadData(data?.tableName)
     }, [data]);
 
-    const onChange = (key: string | string[]) => {
+    const loadData = (key: string) => {
         setTableNameArr([]);
         setSelectedTableName(key);
-        form.setFieldValue('menuName', null);
         if (key === 'categories') {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
                 .then((response) => response.json())
                 .then((data) => {
-                    let array: { val: any; label: any; }[] = [];
+                    let array: any = [];
                     data.map((x: any) => {
                         array.push(
                             { val: x.name, label: x.name }
                         )
                     })
                     setTableNameArr(array);
+                }
+                );
+
+            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
+                .then((response) => response.json())
+                .then((data) => {
+                    let array: any = [];
+                    data.map((x: any) => {
+                        array.push(
+                            { val: x.name, label: x.name }
+                        )
+                    })
+                    setChildArray(array);
                 }
                 );
         } else if (key === 'sizes') {
@@ -93,7 +80,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr }: Props) => {
                 }
                 );
         } else if (key === 'tags') {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
+            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: { val: any; label: any; }[] = [];
@@ -103,6 +90,18 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr }: Props) => {
                         )
                     })
                     setTableNameArr(array);
+                }
+                );
+            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
+                .then((response) => response.json())
+                .then((data) => {
+                    let array: any = [];
+                    data.map((x: any) => {
+                        array.push(
+                            { val: x.name, label: x.name }
+                        )
+                    })
+                    setChildArray(array);
                 }
                 );
         } else if (key === 'colors') {
@@ -131,28 +130,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr }: Props) => {
                         form={form}
                         className="form-box"
                     >
-                        {
-                            tableName && tableName.length > 0 &&
-                            getSelectFormItem('Types', 'tableName', 'Please select a type.', false, tableName, true, '180px', onChange)
-                        }
-                        {
-                            selectedTableName !== undefined &&
-                            <>
-                                {
-                                    !['colors', 'sizes', 'finishes'].includes(selectedTableName) ?
-                                        <>
-                                            {
-                                                tableNameArr && tableNameArr.length > 0 &&
-                                                getSelectFormItem('Menu Name', 'menuName', 'Please select a name.', false, tableNameArr, true)
-                                            }
-                                        </>
-                                        :
-                                        <>
-                                            {getInputFormItem('Menu Name', "menuName", 'Please fill in the Menu Name.', '', true)}
-                                        </>
-                                }
-                            </>
-                        }
+                        {getInputFormItem('Menu Name', "menuName", 'Please fill in the Menu Name.', '', true)}
                     </Form>
                 </div>
                 <div className="form-wrap">

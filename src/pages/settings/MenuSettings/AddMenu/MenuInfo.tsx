@@ -1,6 +1,6 @@
 import { Form } from "antd";
-import { getInputFormItem, getSelectFormItem, getInputNumberFormItem } from "../../../utils/FormItems";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { getInputFormItem, getInputNumberFormItem, getSelectFormItem } from "../../../utils/FormItems";
 
 interface Props {
     form: any;

@@ -1,36 +1,23 @@
 import { Button, Collapse, CollapseProps, Form } from "antd";
-import { categoryData, menuChild } from "../../../products/dummyProduct";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../../hooks/layout/useNotification";
-import MenuInfo from "./MenuInfo";
 import ChildSetting from "../AddMenu/ChildSetting";
+import MenuInfo from "./MenuInfo";
 
 const AddMenu = () => {
     const navigate = useNavigate();
     const pageTitle = 'New Menu'
     const [form] = Form.useForm();
     const { id } = useParams<{ id: string }>();
-    const [childMenu, setChildMenu] = useState<any>();
     const [sideNavDetails, setSideNavDetails] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [prdCategory, setPrdCategory] = useState<any>();
     const [tableNameArr, setTableNameArr] = useState<any>([]);
     const [selectedTableName, setSelectedTableName] = useState<any>();
     const [childArray, setChildArray] = useState<any>();
     const [subNavs, setSubNavs] = useState<any>([]);
 
     //when open drawer modify the data to val and label
-    useEffect(() => {
-        const childMenuList = menuChild();
-        let array: { val: any; label: any; }[] = [];
-        childMenuList.map((x: any) => {
-            array.push(
-                { val: x.id, label: x.name }
-            )
-        })
-        setChildMenu(array);
-    }, []);
 
     const items: CollapseProps['items'] = [
         {
@@ -41,7 +28,7 @@ const AddMenu = () => {
         {
             key: '2',
             label: 'Child Settings',
-            children: <ChildSetting childMenu={childArray} data={sideNavDetails} tableNameArr={tableNameArr} selectedTableName={selectedTableName} setSubNavs={setSubNavs} subNavs={subNavs} />,
+            children: <ChildSetting childMenu={childArray} tableNameArr={tableNameArr} selectedTableName={selectedTableName} setSubNavs={setSubNavs} subNavs={subNavs} />,
         },
     ];
 
@@ -59,34 +46,32 @@ const AddMenu = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
-            .then((response) => response.json())
-            .then((data) => {
-                let array: { val: any; label: any; }[] = [];
-                data.map((x: any) => {
-                    array.push(
-                        { val: x.id, label: x.name }
-                    )
-                })
-                setPrdCategory(array);
-            }
-            );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const submitForm = () => {
         const formValue = form.getFieldsValue();
         const updatedData = subNavs.length > 0 ?
             subNavs.map((x: any, index: any) => {
                 return { name: x.name, path: '/' + (x.name).toLowerCase(), sequence: index + 1, tableName: x.tableName }
             }) : [];
+
+        const foundRecord = subNavs.find((x: any) => x.name === formValue.menuName);
+
+        if (foundRecord) {
+            return setErrorNotification('Main Menu cannot be assigned as child. Please check again');
+        }
+
+        const names = subNavs.map((x: any) => x.name);
+        const hasDuplicates = new Set(names).size !== names.length;
+
+        if(hasDuplicates){
+            return setErrorNotification('Duplicate child found. Please check again');
+        }
+
         const dataBody = {
             name: formValue.menuName,
             tableName: formValue.tableName,
             path: '/' + (formValue.menuName).toLowerCase(),
             sequence: formValue.sequence,
-            subNavs: updatedData
+            subSideNavs: updatedData
         }
 
         fetch(`${import.meta.env.VITE_API_KEY}/add-products-sideNav`, {

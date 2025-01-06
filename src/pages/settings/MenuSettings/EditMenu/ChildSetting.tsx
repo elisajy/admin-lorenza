@@ -1,39 +1,39 @@
-import { Button, Col, Drawer, Form, Input, Row, Space, Table, TableProps } from "antd";
-import { menuChild } from "../../../products/dummyProduct";
-import { useEffect, useState } from "react";
+import { Button, Drawer, Form, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
-import { getInputFormItem, getSelectFormItem, getTagsFormItem, getTextAreaFormItem } from "../../../utils/FormItems";
+import { useEffect, useState } from "react";
 import ConfirmationDialog from "../../../../shared/ConfirmationDialog";
-import useNotification from "../../../../hooks/layout/useNotification";
-
-interface DataType {
-    id: string;
-    name: string;
-    updatedAt: string;
-    key: React.Key;
-}
+import { getSelectFormItem } from "../../../utils/FormItems";
 
 interface Props {
     childMenu: any;
     data: any;
     tableNameArr: any;
+    selectedTableName: any;
+    setSubNavs: React.Dispatch<React.SetStateAction<any>>;
+    subNavs: Array<any>;
 }
 
-const childSetting = ({ childMenu, data, tableNameArr }: Props) => {
+const childSetting = ({ childMenu, data, selectedTableName, setSubNavs, subNavs }: Props) => {
     const [open, setOpen] = useState(false);
-    const [subNavs, setSubNavs] = useState<any>([]);
     const [showModal, setShowModal] = useState(false);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
-    const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [refreshKey, setRefreshKey] = useState(0);
-
-    console.log(tableNameArr);
+    const [childForm] = Form.useForm();
+    const formattedDate = new Date().toISOString();
 
     const showDrawer = () => {
+        childForm.resetFields();
         setOpen(true);
     };
 
     const onClose = () => {
+        setOpen(false);
+    };
+
+    const onSubmit = () => {
+        const child = childForm.getFieldsValue().childNav;
+        const arr = subNavs;
+        arr.push({ tableName: selectedTableName, name: child, updatedAt: formattedDate })
+        setSubNavs([...arr])
         setOpen(false);
     };
 
@@ -44,37 +44,20 @@ const childSetting = ({ childMenu, data, tableNameArr }: Props) => {
     }, [data]);
 
     const deletion = (record?: any) => {
-        console.log(record);
         setShowModal(true);
         setConfirmation({
             title: 'Confirm Submission?',
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                let arr = [record.id];
-                const dataBody = {
-                    questions: arr
+                const index = subNavs.findIndex((x: any) => x.name === record.name);
+                if (index !== -1) {
+                    // Directly mutate the array (not recommended for functional components)
+                    const updatedRecords = [...subNavs];
+                    updatedRecords.splice(index, 1);
+                    setSubNavs([...updatedRecords])
                 }
-                fetch(`${import.meta.env.VITE_API_KEY}/delete-sub-products-sideNav`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataBody)
-                })
-                    .then((response) => {
-                        if (response.status === 204) {
-                            setSuccessNotification('Delete Successful!')
-                        }
-                    }
-                    )
-                    .catch((error) => {
-                        console.log('Delete Child Menu error:', error);
-                        setErrorNotification('Delete Failed. Please try again later.');
-                    });
-
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -119,16 +102,16 @@ const childSetting = ({ childMenu, data, tableNameArr }: Props) => {
                 extra={
                     <Space>
                         <Button onClick={onClose}>Cancel</Button>
-                        <Button onClick={onClose} type="primary">
+                        <Button onClick={onSubmit} type="primary">
                             Submit
                         </Button>
                     </Space>
                 }
             >
-                <Form layout="vertical">
+                <Form layout="vertical" form={childForm}>
                     {
-                        tableNameArr && tableNameArr.length > 0 &&
-                        getSelectFormItem('Child', 'childNav', 'Please select child.', false, tableNameArr)
+                        childMenu && childMenu.length > 0 &&
+                        getSelectFormItem('Child', 'childNav', 'Please select child.', false, childMenu)
                     }
                     {/* {getTagsFormItem('Child', 'childNavs', 'Please select child.', false, childMenu)} */}
                 </Form>

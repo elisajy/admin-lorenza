@@ -4,20 +4,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import { getInputFormItem, getSelectFormItem } from "../../utils/FormItems";
 
-const EditCategory = () => {
-    const pageTitle = 'Edit Category'
+const EditTag = () => {
+    const pageTitle = 'Edit Tag'
     const [form] = Form.useForm();
     const { id } = useParams<{ id: string }>();
-    const [mainCategoryData, setMainCategoryData] = useState<any>();
+    const [mainTag, setMainTag] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const navigate = useNavigate();
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
 
     useEffect(() => {
         try {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: { val: any; label: any; }[] = [];
@@ -26,22 +23,22 @@ const EditCategory = () => {
                             { val: x.id, label: x.name }
                         )
                     })
-                    setMainCategoryData(array);
+                    setMainTag(array);
                 }
                 );
         } catch (error) {
-            console.error("Error fetching Main Categories:", error);
+            console.error("Error fetching Main Tags:", error);
         }
     }, []);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/category-details/${id}`)
+        fetch(`${import.meta.env.VITE_API_KEY}/tag-details/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 form.setFieldsValue({
                     'name': data.name,
-                    'description': data.description,
-                    'mainCategoryId': data.mainCategoryId
+                    'value': data.value,
+                    'mainTagId': data.mainTagId
                 })
             }
             );
@@ -49,7 +46,7 @@ const EditCategory = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
-        fetch(`${import.meta.env.VITE_API_KEY}/update-category`, {
+        fetch(`${import.meta.env.VITE_API_KEY}/update-tag`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -62,12 +59,12 @@ const EditCategory = () => {
             .then((response) => {
                 if (response.status === 204) {
                     setSuccessNotification('Update Successful!')
-                    navigate('/product-categories');
+                    navigate('/product-tags');
                 }
             }
             )
             .catch((error) => {
-                console.log('Update Product Categories error:', error);
+                console.log('Update Product Tags error:', error);
                 setErrorNotification('Update Failed. Please try again later.');
             });
     };
@@ -78,7 +75,7 @@ const EditCategory = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Card title="Category Info" className="form-card-container">
+            <Card title="Tag Info" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
                         <Form
@@ -86,11 +83,11 @@ const EditCategory = () => {
                             form={form}
                             className="form-box"
                         >
-                            {getInputFormItem('Category Name', "name", 'Please fill in the Category Name.')}
-                            {getInputFormItem('Category Description', "description", 'Please fill in the Category Description.')}
+                            {getInputFormItem('Tag Name', "name", 'Please fill in the Tag Name.')}
+                            {getInputFormItem('Tag Value', "value", 'Please fill in the Tag Value.')}
                             {
-                                mainCategoryData && mainCategoryData.length > 0 &&
-                                getSelectFormItem('Main Category', 'mainCategoryId', 'Please select a Main Category.', false, mainCategoryData)
+                                mainTag && mainTag.length > 0 &&
+                                getSelectFormItem('Main Category', 'mainCategoryId', 'Please select a Main Tag.', false, mainTag)
                             }
                         </Form>
                     </div>
@@ -98,10 +95,10 @@ const EditCategory = () => {
             </Card>
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
-                <Button className='form-button' onClick={() => navigate('/product-categories')}>Cancel</Button>
+                <Button className='form-button' onClick={() => navigate('/product-tags')}>Cancel</Button>
             </div>
         </>
     )
 }
 
-export default EditCategory
+export default EditTag

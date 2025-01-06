@@ -167,6 +167,21 @@ const EditCompanyInfo = ReactLazyPreload(
 );
 EditCompanyInfo.preload();
 
+const ProductTags = ReactLazyPreload(
+  () => import("./pages/products/ProductTags")
+);
+ProductTags.preload();
+
+const AddTag = ReactLazyPreload(
+  () => import("./pages/products/AddTag/AddTag")
+);
+AddTag.preload();
+
+const EditTag = ReactLazyPreload(
+  () => import("./pages/products/EditTag/EditTag")
+);
+EditTag.preload();
+
 export const protectedRoutes: RouteInfo[] = [
   {
     id: "Products",
@@ -353,5 +368,23 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Edit Company Info",
     path: "/company-info/edit/:key",
     component: EditCompanyInfo,
+  },
+  {
+    id: "Product Tags",
+    name: "Product Tags",
+    path: "/product-tags",
+    component: ProductTags,
+  },
+  {
+    id: "Add Tag",
+    name: "Add Tag",
+    path: "/product-tags/add",
+    component: AddTag,
+  },
+  {
+    id: "Edit Tag",
+    name: "Edit Tag",
+    path: "/product-tags/edit/:id",
+    component: EditTag,
   },
 ];

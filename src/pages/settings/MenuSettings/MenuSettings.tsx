@@ -56,6 +56,9 @@ const MenuSettings = () => {
     };
 
     const deletion = (record: any) => {
+        if (record.subNavs.length > 0) {
+            return setErrorNotification('Menu not allowed to delete. Child Menu existed.');
+        }
         setShowModal(true);
         setConfirmation({
             title: 'Confirm Submission?',

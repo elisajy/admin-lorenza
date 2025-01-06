@@ -5,7 +5,7 @@ import useNotification from "../../../hooks/layout/useNotification";
 import { getInputFormItem, getSelectFormItem } from "../../utils/FormItems";
 
 const AddCategory = () => {
-    const pageTitle = 'Category Name'
+    const pageTitle = 'New Category'
     const [form] = Form.useForm();
     const [mainCategoryData, setMainCategoryData] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();

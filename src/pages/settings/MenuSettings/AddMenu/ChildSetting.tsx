@@ -1,26 +1,22 @@
-import { Button, Col, Drawer, Form, Input, Row, Space, Table, TableProps } from "antd";
-import { menuChild } from "../../../products/dummyProduct";
-import { useEffect, useState } from "react";
+import { Button, Drawer, Form, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
-import { getInputFormItem, getSelectFormItem, getTagsFormItem, getTextAreaFormItem } from "../../../utils/FormItems";
-import ConfirmationDialog from "../../../../shared/ConfirmationDialog";
+import { useState } from "react";
 import useNotification from "../../../../hooks/layout/useNotification";
+import ConfirmationDialog from "../../../../shared/ConfirmationDialog";
+import { getSelectFormItem } from "../../../utils/FormItems";
 
 interface Props {
     childMenu: any;
-    data: any;
     tableNameArr: any;
     selectedTableName: any;
     setSubNavs: React.Dispatch<React.SetStateAction<any>>;
     subNavs: Array<any>;
 }
 
-const childSetting = ({ childMenu, data, tableNameArr, selectedTableName, setSubNavs, subNavs }: Props) => {
+const childSetting = ({ childMenu, selectedTableName, setSubNavs, subNavs }: Props) => {
     const [open, setOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
-    const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [refreshKey, setRefreshKey] = useState(0);
     const [childForm] = Form.useForm();
     const formattedDate = new Date().toISOString();
     const showDrawer = () => {
@@ -47,10 +43,15 @@ const childSetting = ({ childMenu, data, tableNameArr, selectedTableName, setSub
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                const updatedRecords = subNavs.filter((x: any) => x.name === record.value);
-                setSubNavs([...updatedRecords])
+                const index = subNavs.findIndex((x: any) => x.name === record.name);
+                if (index !== -1) {
+                    // Directly mutate the array (not recommended for functional components)
+                    const updatedRecords = [...subNavs];
+                    updatedRecords.splice(index, 1);
+                    setSubNavs([...updatedRecords])
+                }
+
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
