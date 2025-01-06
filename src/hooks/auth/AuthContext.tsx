@@ -44,7 +44,7 @@ const reducer = (state: AuthState, action: { type: string, payload: any }): Auth
             return {
                 ...state,
                 userProfile: { ...payload['userProfile'] },
-                sideNav: [...payload['sideNav']]
+                // sideNav: [...payload['sideNav']]
             }
         case UPDATE_CURRENT_USER_PROFILE:
             return {

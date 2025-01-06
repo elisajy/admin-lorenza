@@ -4,16 +4,24 @@ import TextEditor from '../../../shared/TextEditor';
 import "./AboutUsSettings.less";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
+import { useCookies } from "react-cookie";
 
 const AboutUsSettings = () => {
     const navigate = useNavigate();
-    const pageTitle = 'About Us'
+    const pageTitle = 'About Us';
+    const aToken: any = import.meta.env.VITE_ACCESS_TOKEN || 'abf-at';
     const [form] = Form.useForm();
     const [aboutUsRecords, setAboutUsRecords] = useState<any>();
+    const [cookies, setCookie, removeCookie] = useCookies([aToken]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_KEY}/about-us`)
+        console.log(cookies)
+        fetch(`${import.meta.env.VITE_API_KEY}/about-us`, {
+            headers: {
+                'Authorization': `Bearer ${cookies[aToken]}`
+            },
+        })
             .then((response) => response.json())
             .then((data) => {
                 setAboutUsRecords(data);
@@ -51,7 +59,8 @@ const AboutUsSettings = () => {
         fetch(`${import.meta.env.VITE_API_KEY}/update-about-us`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cookies[aToken]}`
             },
             body: JSON.stringify(dataBody)
         })

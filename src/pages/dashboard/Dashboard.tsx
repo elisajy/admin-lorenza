@@ -31,7 +31,7 @@ const Dashboard = () => {
                     background: 'white',
                 }}
             >
-                Bill is a cat.
+                Welcome.
             </div>
         </>
     );
