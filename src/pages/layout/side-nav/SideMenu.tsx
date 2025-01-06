@@ -87,22 +87,22 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             icon: 'ProductOutlined',
             parentId: 1,
         },
-        {
-            id: 3,
-            name: 'Menu',
-            route: '/menu',
-            order: 3,
-            icon: 'SettingOutlined',
-            parentId: null,
-        },
-        {
-            id: 31,
-            name: 'Menu Settings',
-            route: '/menu-settings',
-            order: 1,
-            icon: 'SettingOutlined',
-            parentId: 3
-        },
+        // {
+        //     id: 3,
+        //     name: 'Menu',
+        //     route: '/menu',
+        //     order: 3,
+        //     icon: 'SettingOutlined',
+        //     parentId: null,
+        // },
+        // {
+        //     id: 31,
+        //     name: 'Menu Settings',
+        //     route: '/menu-settings',
+        //     order: 1,
+        //     icon: 'SettingOutlined',
+        //     parentId: 3
+        // },
         // {
         //     id: 32,
         //     name: 'Menu Listing Settings',

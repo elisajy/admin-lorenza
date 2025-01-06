@@ -54,9 +54,9 @@ function App() {
         <Suspense fallback={<Spin />}>
           {/* <ScrollToTop /> */}
           <Routes>
-            {/* <Route path="/auth" element={<Auth />}>
+            <Route path="/auth" element={<Auth />}>
               <Route index element={<Login />} />
-            </Route> */}
+            </Route>
             <Route path="/" element={<AppProtected />}>
               <Route index element={<Dashboard />} />
               {renderProtectedRoutes}
