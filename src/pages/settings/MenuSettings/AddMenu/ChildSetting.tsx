@@ -11,11 +11,12 @@ interface Props {
     data: any;
     tableNameArr: any;
     selectedTableName: any;
+    setSubNavs: React.Dispatch<React.SetStateAction<any>>;
+    subNavs: Array<any>;
 }
 
-const childSetting = ({ childMenu, data, tableNameArr, selectedTableName }: Props) => {
+const childSetting = ({ childMenu, data, tableNameArr, selectedTableName, setSubNavs, subNavs }: Props) => {
     const [open, setOpen] = useState(false);
-    const [subNavs, setSubNavs] = useState<any>([]);
     const [showModal, setShowModal] = useState(false);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
     const { setSuccessNotification, setErrorNotification } = useNotification();
@@ -23,6 +24,7 @@ const childSetting = ({ childMenu, data, tableNameArr, selectedTableName }: Prop
     const [childForm] = Form.useForm();
     const formattedDate = new Date().toISOString();
     const showDrawer = () => {
+        childForm.resetFields();
         setOpen(true);
     };
 
@@ -33,12 +35,8 @@ const childSetting = ({ childMenu, data, tableNameArr, selectedTableName }: Prop
     const onSubmit = () => {
         const child = childForm.getFieldsValue().childNav;
         const arr = subNavs;
-
-        console.log(tableNameArr);
-
         arr.push({ tableName: selectedTableName, name: child, updatedAt: formattedDate })
         setSubNavs([...arr])
-        console.log(arr);
         setOpen(false);
     };
 
@@ -49,28 +47,8 @@ const childSetting = ({ childMenu, data, tableNameArr, selectedTableName }: Prop
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                let arr = [record.id];
-                const dataBody = {
-                    questions: arr
-                }
-                fetch(`${import.meta.env.VITE_API_KEY}/delete-sub-products-sideNav`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataBody)
-                })
-                    .then((response) => {
-                        if (response.status === 204) {
-                            setSuccessNotification('Delete Successful!')
-                        }
-                    }
-                    )
-                    .catch((error) => {
-                        console.log('Delete Child Menu error:', error);
-                        setErrorNotification('Delete Failed. Please try again later.');
-                    });
-
+                const updatedRecords = subNavs.filter((x: any) => x.name === record.value);
+                setSubNavs([...updatedRecords])
                 setShowModal(false);
                 setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
@@ -125,10 +103,9 @@ const childSetting = ({ childMenu, data, tableNameArr, selectedTableName }: Prop
             >
                 <Form layout="vertical" form={childForm}>
                     {
-                        tableNameArr && tableNameArr.length > 0 &&
-                        getSelectFormItem('Child Name', 'childNav', 'Please select child.', false, tableNameArr)
+                        childMenu && childMenu.length > 0 &&
+                        getSelectFormItem('Child Name', 'childNav', 'Please select child.', false, childMenu)
                     }
-                    {/* {getTagsFormItem('Child', 'childNavs', 'Please select child.', false, childMenu)} */}
                 </Form>
             </Drawer>
         </>

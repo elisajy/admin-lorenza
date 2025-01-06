@@ -9,10 +9,12 @@ interface Props {
     tableNameArr: any;
     setSelectedTableName: React.Dispatch<React.SetStateAction<any>>;
     selectedTableName: any;
+    setChildArray: React.Dispatch<React.SetStateAction<any>>;
+    childArray: any;
 }
 
-const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableName, selectedTableName }: Props) => {
-
+const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableName, selectedTableName, setChildArray, childArray }: Props) => {
+    
     const tableName = [
         {
             id: 1,
@@ -53,16 +55,30 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
         setSelectedTableName(key);
         form.setFieldValue('menuName', null);
         if (key === 'categories') {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
+            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: any = [];
                     data.map((x: any) => {
                         array.push(
-                            { val: x.name, label: x.name, path: x.path, sequence: x.sequence }
+                            { val: x.name, label: x.name }
                         )
                     })
                     setTableNameArr(array);
+                }
+                );
+
+            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
+                .then((response) => response.json())
+                .then((data) => {
+                    let array: any = [];
+                    data.map((x: any) => {
+                        array.push(
+                            { val: x.name, label: x.name }
+                        )
+                    })
+                    console.log(array);
+                    setChildArray(array);
                 }
                 );
         } else if (key === 'sizes') {
@@ -94,7 +110,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                 }
                 );
         } else if (key === 'tags') {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
+            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: { val: any; label: any; }[] = [];
@@ -104,6 +120,18 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                         )
                     })
                     setTableNameArr(array);
+                }
+                );
+            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
+                .then((response) => response.json())
+                .then((data) => {
+                    let array: any = [];
+                    data.map((x: any) => {
+                        array.push(
+                            { val: x.name, label: x.name }
+                        )
+                    })
+                    setChildArray(array);
                 }
                 );
         } else if (key === 'colors') {

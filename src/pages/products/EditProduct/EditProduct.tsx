@@ -213,7 +213,7 @@ const EditProduct = () => {
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
-                if (response.status === 204) {
+                if (response.status === 201) {
                     setSuccessNotification('Upload Product Images Successful!');
                     navigate('/product-listing');
                 }
@@ -235,7 +235,7 @@ const EditProduct = () => {
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
-                if (response.status === 204) {
+                if (response.status === 201) {
                     setSuccessNotification('Upload Mocked Images Successful!');
                     navigate('/product-listing');
                 }
@@ -277,7 +277,7 @@ const EditProduct = () => {
                     setSuccessNotification('Update Successful!');
                     if (productImage !== undefined) {
                         uploadProductImage(productImage);
-                    } else { }
+                    }
                     if (mockedImage !== undefined) {
                         uploadMockImage(mockedImage);
                     }
