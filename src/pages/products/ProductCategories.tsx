@@ -57,7 +57,7 @@ const ProductCategories = () => {
                         data.map((x: any) => {
                             return { ...x, key: x.id }
                         }) : [];
-                    setProductCategories(updatedData);
+                    setProductCategories([...updatedData]);
                 }
                 );
         } catch (error) {

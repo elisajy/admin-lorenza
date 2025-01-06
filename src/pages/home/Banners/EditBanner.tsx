@@ -5,29 +5,38 @@ import PreviewImage from "../../../shared/PreviewImage";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
 import { imageType } from "../../products/dummyProduct";
 import { getInputFormItem, getInputNumberFormItem, getSelectFormItem, getUploadFormItem } from "../../utils/FormItems";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditBanner = () => {
     const pageTitle = 'Edit Banner'
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [imageTypeList, setImageTypeList] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [bannerImage, setBannerImage] = useState();
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
+    const [bannerImage, setBannerImage] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
     useEffect(() => {
-        const arr = imageType();
-        let array: { val: any; label: any; }[] = [];
-        arr.map((x: any) => {
-            array.push(
-                { val: x.id, label: x.name }
-            )
-        })
-
-        setImageTypeList(array);
+        fetch(`${import.meta.env.VITE_API_KEY}/home-banner-details/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                form.setFieldsValue({
+                    name: data.name,
+                    sequence: data.sequence,
+                    link: data.link,
+                    imageUrl: [
+                        {
+                            uid: "-2",
+                            status: "done",
+                            url: data.imageUrl,
+                            name: `image_${id}`,
+                        },
+                    ],
+                })
+            }
+            );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const checkFileType = (e: any) => {
@@ -61,6 +70,65 @@ const EditBanner = () => {
         });
     };
 
+    const uploadImage = async (file: File, responseId: any) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-home-banner/${responseId}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Upload Banner Successful!');
+                    navigate('/banners');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Banner error:', error);
+                setErrorNotification('Upload Banner Failed. Please try again later.');
+            });
+
+    };
+
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        const dataBody = {
+            name: formValue.name,
+            sequence: formValue.sequence,
+            link: formValue.link
+        }
+
+        fetch(`${import.meta.env.VITE_API_KEY}/update-home-banner`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...dataBody,
+                id: id
+            })
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Update Successful!');
+                    if (bannerImage !== undefined) {
+                        uploadImage(bannerImage, id)
+                    } else {
+                        navigate('/banners');
+                    }
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Update Banner error:', error);
+                setErrorNotification('Update Failed. Please try again later.');
+            });
+    };
+
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>
@@ -78,12 +146,6 @@ const EditBanner = () => {
                             {getInputFormItem('Banner Name', "name", 'Please fill in the Banner Name.')}
                             {getInputFormItem('Banner Link', "link", 'Please fill in the Banner Link.')}
                             {getInputNumberFormItem('Banner Sequence', "sequence", 'Please fill in sequence.')}
-                            {
-                                imageTypeList && imageTypeList.length > 0 ?
-                                    getSelectFormItem('Image Type', 'type', 'Please select an image type.', false, imageTypeList)
-                                    :
-                                    null
-                            }
                         </Form>
                     </div>
                 </div>
@@ -95,14 +157,14 @@ const EditBanner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('image', 'Banner Image', normFile, handlePreview, checkFileType)}
+                            {getUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType)}
                         </Form>
                     </div>
                 </div>
             </Card>
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
+                <Button className='form-button' onClick={() => navigate('/banners')}>Cancel</Button>
             </div>
             <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>

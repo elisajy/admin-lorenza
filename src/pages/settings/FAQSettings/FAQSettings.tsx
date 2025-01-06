@@ -58,7 +58,7 @@ const FAQSettings = () => {
                         data.map((x: any) => {
                             return { ...x, key: x.id }
                         }) : [];
-                    setFaqList(updatedData);
+                    setFaqList([...updatedData]);
                 }
                 );
         } catch (error) {

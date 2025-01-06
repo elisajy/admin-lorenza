@@ -46,7 +46,7 @@ const Inspiration = () => {
                         data.map((x: any) => {
                             return { ...x, key: x.id }
                         }) : [];
-                    setInspirationList(updatedData);
+                    setInspirationList([...updatedData]);
                 }
                 );
         } catch (error) {

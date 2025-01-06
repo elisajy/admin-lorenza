@@ -64,6 +64,11 @@ const EditMenu = ReactLazyPreload(
 );
 EditMenu.preload();
 
+const AddMenu = ReactLazyPreload(
+  () => import("./pages/settings/MenuSettings/AddMenu/AddMenu")
+);
+AddMenu.preload();
+
 const FAQSettings = ReactLazyPreload(
   () => import("./pages/settings/FAQSettings/FAQSettings")
 );
@@ -144,10 +149,23 @@ const EditInspiration = ReactLazyPreload(
 );
 EditInspiration.preload();
 
-const Projects = ReactLazyPreload(
-  () => import("./pages/projects/Projects")
-);
+const Projects = ReactLazyPreload(() => import("./pages/projects/Projects"));
 Projects.preload();
+
+const AddProject = ReactLazyPreload(
+  () => import("./pages/projects/AddProject")
+);
+AddProject.preload();
+
+const CompanyInfo = ReactLazyPreload(
+  () => import("./pages/home/CompanyInfo/CompanyInfo")
+);
+CompanyInfo.preload();
+
+const EditCompanyInfo = ReactLazyPreload(
+  () => import("./pages/home/CompanyInfo/EditCompanyInfo")
+);
+EditCompanyInfo.preload();
 
 export const protectedRoutes: RouteInfo[] = [
   {
@@ -209,6 +227,12 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Edit Menu",
     path: "/menu-settings/edit/:id",
     component: EditMenu,
+  },
+  {
+    id: "Add Menu",
+    name: "Add Menu",
+    path: "/menu-settings/add",
+    component: AddMenu,
   },
   {
     id: "FAQ Settings",
@@ -311,5 +335,23 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Projects",
     path: "/project-settings",
     component: Projects,
+  },
+  {
+    id: "Add Project",
+    name: "Add Project",
+    path: "/project-settings/add",
+    component: AddProject,
+  },
+  {
+    id: "Company Info",
+    name: "Company Info",
+    path: "/company-info",
+    component: CompanyInfo,
+  },
+  {
+    id: "Edit Company Info",
+    name: "Edit Company Info",
+    path: "/company-info/edit/:key",
+    component: EditCompanyInfo,
   },
 ];

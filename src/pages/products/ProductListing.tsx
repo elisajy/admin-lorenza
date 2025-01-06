@@ -48,7 +48,7 @@ const ProductListing = () => {
 
                         return { ...x, key: x.id, category: prdCategory, tagList: prdTags }
                     }) : [];
-                setProductListing(updatedData);
+                setProductListing([...updatedData]);
             }
             );
     };

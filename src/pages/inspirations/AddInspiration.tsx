@@ -23,11 +23,10 @@ const AddInspiration = () => {
 
         fetch(`${import.meta.env.VITE_API_KEY}/upload-inspiration-thumbnail/${responseId}`, {
             method: 'POST',
-            mode: 'no-cors',  // Set no-cors mode here
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
-                if (response.status === 204) {
+                if (response.status === 201) {
                     setSuccessNotification('Upload Thumbnail Successful!');
                     navigate('/inspiration-settings');
                 }

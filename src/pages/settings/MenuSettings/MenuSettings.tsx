@@ -47,7 +47,7 @@ const MenuSettings = () => {
                             const subNavNum = x.subNavs.length
                             return { ...x, key: x.id, childNum: subNavNum }
                         }) : [];
-                    setPrdSideNavs(updatedData);
+                    setPrdSideNavs([...updatedData]);
                 }
                 );
         } catch (error) {

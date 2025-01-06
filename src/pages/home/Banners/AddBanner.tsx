@@ -1,34 +1,20 @@
 import { Button, Card, Form, Upload } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import PreviewImage from "../../../shared/PreviewImage";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
-import { imageType } from "../../products/dummyProduct";
-import { getInputFormItem, getInputNumberFormItem, getSelectFormItem, getUploadFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getInputNumberFormItem, getUploadFormItem } from "../../utils/FormItems";
 
 const AddBanner = () => {
     const pageTitle = 'New Banner'
+    const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [imageTypeList, setImageTypeList] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [bannerImage, setBannerImage] = useState();
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
+    const [bannerImage, setBannerImage] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
-    useEffect(() => {
-        const arr = imageType();
-        let array: { val: any; label: any; }[] = [];
-        arr.map((x: any) => {
-            array.push(
-                { val: x.id, label: x.name }
-            )
-        })
-
-        setImageTypeList(array);
-    }, []);
 
     const checkFileType = (e: any) => {
         if (e.type === "image/jpeg" || e.type === "image/png") {
@@ -61,6 +47,58 @@ const AddBanner = () => {
         });
     };
 
+    const uploadImage = async (file: File, responseId: any) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-home-banner/${responseId}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Upload Banner Successful!');
+                    navigate('/banners');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Banner error:', error);
+                setErrorNotification('Upload Banner Failed. Please try again later.');
+            });
+
+    };
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        const dataBody = {
+            name: formValue.name,
+            sequence: formValue.sequence,
+            link: formValue.link
+        }
+
+        fetch(`${import.meta.env.VITE_API_KEY}/add-home-banner`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataBody)
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Insert Successful!');
+                    const data = await response.json()
+                    uploadImage(bannerImage, data.id)
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Insert Banner error:', error);
+                setErrorNotification('Insert Failed. Please try again later.');
+            });
+    };
+
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>
@@ -78,12 +116,6 @@ const AddBanner = () => {
                             {getInputFormItem('Banner Name', "name", 'Please fill in the Banner Name.')}
                             {getInputFormItem('Banner Link', "link", 'Please fill in the Banner Link.')}
                             {getInputNumberFormItem('Banner Sequence', "sequence", 'Please fill in sequence.')}
-                            {
-                                imageTypeList && imageTypeList.length > 0 ?
-                                    getSelectFormItem('Image Type', 'type', 'Please select an image type.', false, imageTypeList)
-                                    :
-                                    null
-                            }
                         </Form>
                     </div>
                 </div>
@@ -101,8 +133,8 @@ const AddBanner = () => {
                 </div>
             </Card>
             <div className="form-action-button-container">
-                <Button type="primary" className='form-button'>Save</Button>
-                <Button className='form-button'>Cancel</Button>
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
+                <Button className='form-button' onClick={() => navigate('/banners')}>Cancel</Button>
             </div>
             <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>

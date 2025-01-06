@@ -1,37 +1,37 @@
-import { Button, Space, Table } from "antd";
-import Column from "antd/es/table/Column";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
+import { Space, Table } from "antd";
+import Column from "antd/es/table/Column";
 import ConfirmationDialog from "../../../shared/ConfirmationDialog";
 
-const FAQSectionSettings = () => {
+const Commercials = () => {
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
-    const [faqSection, setFAQSection] = useState<any>([]);
+    const [commercials, setCommercials] = useState<any>([]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [refreshKey, setRefreshKey] = useState(0);
 
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
-            navigate(`/faq-section-settings/edit/${record.key}`)
+            navigate(`/project-residentials/edit/${record.key}`)
         }
 
         if (type === 'add') {
-            navigate(`/faq-section-settings/add`)
+            navigate(`/project-residentials/add`)
         }
     }
 
     useEffect(() => {
-        fetchFAQSection();
+        fetchCommercials();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshKey]);
 
-    const fetchFAQSection = () => {
-        setFAQSection([]);
+    const fetchCommercials = () => {
+        setCommercials([]);
         try {
-            fetch(`${import.meta.env.VITE_API_KEY}/all-faq-sections`, {
+            fetch(`${import.meta.env.VITE_API_KEY}/all-project-commercials`, {
                 method: 'GET',
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -46,11 +46,11 @@ const FAQSectionSettings = () => {
                         data.map((x: any) => {
                             return { ...x, key: x.id }
                         }) : [];
-                    setFAQSection([...updatedData]);
+                    setCommercials([...updatedData]);
                 }
                 );
         } catch (error) {
-            console.error("Error fetching FAQ sections:", error);
+            console.error("Error fetching Project Commercials:", error);
         }
     };
 
@@ -61,7 +61,7 @@ const FAQSectionSettings = () => {
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                fetch(`${import.meta.env.VITE_API_KEY}/delete-faq-section/${record.id}`, {
+                fetch(`${import.meta.env.VITE_API_KEY}/delete-project-commercial/${record.id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ const FAQSectionSettings = () => {
                     }
                     )
                     .catch((error) => {
-                        console.log('Delete FAQ Section error:', error);
+                        console.log('Delete Project Commercial error:', error);
                         setErrorNotification('Delete Failed. Please try again later.');
                     });
 
@@ -87,37 +87,27 @@ const FAQSectionSettings = () => {
 
     return (
         <>
-            <div className='form-button-container'>
-                <div>
-                    <h2>FAQ Section Settings</h2>
-                </div>
-                <div>
-                    <Button type="primary" className='form-button' onClick={() => navAction('add')}>Add</Button>
-                </div>
-            </div>
+            <Table dataSource={commercials}                >
+                <Column title="Title" dataIndex="title" key="name" />
+                <Column title="Path" dataIndex="path" key="name" />
+                <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />
+                <Column
+                    title="Action"
+                    key="action"
+                    render={(_: any, record: any) => (
+                        <Space size="middle">
+                            <a onClick={() => navAction('edit', record)}>Edit</a>
+                            <a onClick={() => deletion(record)}>Delete</a>
+                        </Space>
+                    )}
+                />
+            </Table>
             <ConfirmationDialog showModal={showModal} title={confirmation.title}
                 confirmationMessage={confirmation.message}
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
-            <div>
-                <Table dataSource={faqSection}                >
-                    <Column title="Type" dataIndex="name" key="name" />
-                    <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />
-                    <Column
-                        title="Action"
-                        key="action"
-                        render={(_: any, record: any) => (
-                            <Space size="middle">
-                                <a onClick={() => navAction('edit', record)}>Edit</a>
-                                <a onClick={() => deletion(record)}>Delete</a>
-                            </Space>
-                        )}
-                    />
-                </Table>
-
-            </div>
         </>
     )
 }
 
-export default FAQSectionSettings
+export default Commercials

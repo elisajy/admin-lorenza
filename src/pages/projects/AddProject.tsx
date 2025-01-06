@@ -1,64 +1,34 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
 import PreviewImage from "../../shared/PreviewImage";
 import TextEditor from "../../shared/TextEditor";
-import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../utils/FormItems";
+import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getSelectFormItem } from "../utils/FormItems";
 
-const EditInspiration = () => {
-    const pageTitle = 'Edit Inspiration'
-    const { id } = useParams<{ id: string }>();
+const AddProject = () => {
+    const pageTitle = 'New Project'
     const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [inspirationDetails, setInspirationDetails] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [thumbNail, setThumbnail] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
 
-    useEffect(() => {
-        try {
-            fetch(`${import.meta.env.VITE_API_KEY}/inspiration-details/${id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    form.setFieldsValue({
-                        title: data.title,
-                        description: data.description,
-                        path: data.path,
-                        content: data.content,
-                        thumbnail: [
-                            {
-                                uid: "-2",
-                                status: "done",
-                                url: data.thumbnail,
-                                name: `thumbnail_${id}`,
-                            },
-                        ],
-                    })
-                    setInspirationDetails(data);
-                }
-                );
-        } catch (error) {
-            console.error("Error fetching Inspiration Details:", error);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const uploadImage = async (file: File) => {
+    const uploadCommercialImage = async (file: File, responseId: any) => {
         const formData = new FormData();
         formData.append('image', file);  // 'image' is the field name expected by the server
 
-        fetch(`${import.meta.env.VITE_API_KEY}/upload-inspiration-thumbnail/${id}`, {
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-commercial-thumbnail/${responseId}`, {
             method: 'POST',
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
                 if (response.status === 201) {
                     setSuccessNotification('Upload Thumbnail Successful!');
-                    navigate('/inspiration-settings');
+                    navigate('/project-settings');
                 }
             }
             )
@@ -66,41 +36,82 @@ const EditInspiration = () => {
                 console.log('Upload Thumbnail error:', error);
                 setErrorNotification('Upload Thumbnail Failed. Please try again later.');
             });
+
+    };
+
+    const uploadResidentialImage = async (file: File, responseId: any) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-residential-thumbnail/${responseId}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Upload Thumbnail Successful!');
+                    navigate('/project-settings');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Thumbnail error:', error);
+                setErrorNotification('Upload Thumbnail Failed. Please try again later.');
+            });
+
     };
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
         const dataBody = {
             path: formValue.path,
-            content: formValue.content ?? inspirationDetails.content,
+            content: formValue.content,
             description: formValue.description,
             title: formValue.title
         }
-        fetch(`${import.meta.env.VITE_API_KEY}/update-inspiration`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ...dataBody,
-                id: id
+
+        if (formValue.projectType === 'residentials') {
+            fetch(`${import.meta.env.VITE_API_KEY}/add-project-residential`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataBody)
             })
-        })
-            .then(async (response) => {
-                if (response.status === 204) {
-                    setSuccessNotification('Update Successful!');
-                    if (thumbNail !== undefined) {
-                        uploadImage(thumbNail)
-                    } else {
-                        navigate('/inspiration-settings');
+                .then(async (response) => {
+                    if (response.status === 201) {
+                        setSuccessNotification('Insert Successful!');
+                        const data = await response.json()
+                        uploadResidentialImage(thumbNail, data.id)
                     }
                 }
-            }
-            )
-            .catch((error) => {
-                console.log('Update Inspiration error:', error);
-                setErrorNotification('Update Failed. Please try again later.');
-            });
+                )
+                .catch((error) => {
+                    console.log('Insert Inspiration error:', error);
+                    setErrorNotification('Insert Failed. Please try again later.');
+                });
+        } else {
+            fetch(`${import.meta.env.VITE_API_KEY}/add-project-commercial`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataBody)
+            })
+                .then(async (response) => {
+                    if (response.status === 201) {
+                        setSuccessNotification('Insert Successful!');
+                        const data = await response.json()
+                        uploadCommercialImage(thumbNail, data.id)
+                    }
+                }
+                )
+                .catch((error) => {
+                    console.log('Insert Project Commercial error:', error);
+                    setErrorNotification('Insert Failed. Please try again later.');
+                });
+        }
+
     };
 
     const checkFileType = (e: any) => {
@@ -134,6 +145,17 @@ const EditInspiration = () => {
         });
     };
 
+    const typeList = [
+        {
+            val: 'residentials',
+            label: 'Residentials'
+        },
+        {
+            val: 'Commercials',
+            label: 'Commercials'
+        }
+    ]
+
     const items: CollapseProps['items'] = [
         {
             key: '1',
@@ -146,18 +168,24 @@ const EditInspiration = () => {
                         form={form}
                         className="form-box"
                     >
+                        {
+                            typeList && typeList.length > 0 ?
+                                getSelectFormItem('Project Type', 'projectType', 'Please select a Type.', false, typeList)
+                                :
+                                null
+                        }
                         {getInputFormItem('Title', "title", 'Please fill in the Title.')}
                         {getTextAreaFormItem('Description', "description", 'Please fill in the Description.', 6)}
                         {getInputFormItem('Path', "path", 'Please fill in the Path.')}
                         {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType)}
-                        {/* {getUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, defaultTN, false)} */}
                     </Form>
                 </div>
+
             </div>,
         },
         {
             key: '2',
-            label: 'Inspiration Content',
+            label: 'Project Content',
             children: <div className="form-container">
                 <div className="form-wrap">
                     <Form
@@ -190,11 +218,11 @@ const EditInspiration = () => {
             <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={['1']} onChange={onChange} />;
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
-                <Button className='form-button' onClick={() => navigate('/inspiration-settings')}>Cancel</Button>
+                <Button className='form-button' onClick={() => navigate('/project-settings')}>Cancel</Button>
             </div>
             <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>
     )
 }
 
-export default EditInspiration
+export default AddProject

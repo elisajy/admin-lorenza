@@ -17,7 +17,8 @@ const AddProduct = () => {
     const [prdSizes, setPrdSizes] = useState<any>();
     const [prdFinishes, setPrdFinishes] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-    const [productImage, setProductImage] = useState();
+    const [productImage, setProductImage] = useState<any>();
+    const [mockedImage, setMockedImage] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
@@ -34,11 +35,19 @@ const AddProduct = () => {
     };
 
     //upload file
-    const normFile = (e: any) => {
+    const normPIFile = (e: any) => {
         if (Array.isArray(e)) {
             return e;
         }
         setProductImage(e.file);
+        return e && e.fileList;
+    };
+
+    const normMIFile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        setMockedImage(e.file);
         return e && e.fileList;
     };
 
@@ -67,7 +76,21 @@ const AddProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('image', 'Product Image', normFile, handlePreview, checkFileType, [])}
+                        {getUploadFormItem('image', 'Product Image', normPIFile, handlePreview, checkFileType)}
+                    </Form>
+                </div>
+            </div>,
+        },
+        {
+            key: '3',
+            label: 'Mock Images',
+            children: <div className="form-container">
+                <div className="form-wrap">
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        className="form-box">
+                        {getUploadFormItem('mockedImages', 'Mocked Image', normMIFile, handlePreview, checkFileType)}
                     </Form>
                 </div>
             </div>,
@@ -142,8 +165,89 @@ const AddProduct = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const submitForm = () => {
+    const uploadProductImage = async (file: File, responseId: any) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
 
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-products-images/${responseId}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Upload Product Images Successful!');
+                    navigate('/product-listing');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Product Images error:', error);
+                setErrorNotification('Upload Product Images Failed. Please try again later.');
+            });
+
+    };
+
+    const uploadMockImage = async (file: File, responseId: any) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-mocked-images/${responseId}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Upload Mocked Images Successful!');
+                    navigate('/product-listing');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Mocked Images error:', error);
+                setErrorNotification('Upload Mocked Images Failed. Please try again later.');
+            });
+
+    };
+
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        const dataBody = {
+            name: formValue.prdName,
+            code: formValue.prdCode,
+            description: formValue.prdDesc,
+            variation: formValue.prdVariation,
+            thickness: formValue.prdThickness,
+            color: formValue.prdColor,
+            tags: formValue.prdTag,
+            categories: formValue.prdCategory,
+            size: formValue.prdSize,
+            finish: formValue.prdFinish
+        }
+        fetch(`${import.meta.env.VITE_API_KEY}/add-product`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataBody)
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Insert Successful!');
+                    const data = await response.json()
+                    console.log(data);
+                    uploadProductImage(productImage, data.id);
+                    uploadMockImage(mockedImage, data.id);
+                }
+
+                if (response.status === 409) {
+                    setErrorNotification('Duplicated records. Please try again later.');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Insert Inspiration error:', error);
+                setErrorNotification('Insert Failed. Please try again later.');
+            });
     };
 
     return (

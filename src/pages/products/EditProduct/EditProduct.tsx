@@ -78,25 +78,25 @@ const EditProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('image', 'Product Image', normPIFile, handlePreview, checkFileType, (prdDetails?.images || []))}
+                        {getUploadFormItem('images', 'Product Image', normPIFile, handlePreview, checkFileType)}
                     </Form>
                 </div>
             </div>,
         },
-        // {
-        //     key: '3',
-        //     label: 'Mock Images',
-        //     children: <div className="form-container">
-        //         <div className="form-wrap">
-        //             <Form
-        //                 layout="vertical"
-        //                 form={form}
-        //                 className="form-box">
-        //                 {getUploadFormItem('image', 'Mocked Image', normMIFile, handlePreview, checkFileType, (prdDetails?.mockedImages || []))}
-        //             </Form>
-        //         </div>
-        //     </div>,
-        // },
+        {
+            key: '3',
+            label: 'Mock Images',
+            children: <div className="form-container">
+                <div className="form-wrap">
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        className="form-box">
+                        {getUploadFormItem('mockedImages', 'Mocked Image', normMIFile, handlePreview, checkFileType)}
+                    </Form>
+                </div>
+            </div>,
+        },
     ];
 
     const onChange = (key: string | string[]) => {
@@ -107,6 +107,33 @@ const EditProduct = () => {
         fetch(`${import.meta.env.VITE_API_KEY}/product-details/${id}`)
             .then((response) => response.json())
             .then((data) => {
+                let arrImages: any = [];
+                let arrMockedImages: any = [];
+                if (data.images.length !== 0) {
+                    data.images.map((url: any, index: any) => (
+                        arrImages.push({
+                            uid: `-${index + 1}`,
+                            name: `image_${index + 1}`,
+                            status: 'done',
+                            url: url
+                        })
+                    ))
+                }
+                if (data.mockedImages.length !== 0) {
+                    data.mockedImages.map((url: any, index: any) => (
+                        arrMockedImages.push({
+                            uid: `-${index + 1}`,
+                            name: `image_${index + 1}`,
+                            status: 'done',
+                            url: url
+                        })
+                    ))
+                }
+
+                form.setFieldsValue({
+                    images: arrImages,
+                    mockedImages: arrMockedImages,
+                })
                 setPrdDetails(data);
             }
             );
@@ -183,7 +210,6 @@ const EditProduct = () => {
 
         fetch(`${import.meta.env.VITE_API_KEY}/upload-products-images/${id}`, {
             method: 'POST',
-            mode: 'no-cors',  // Set no-cors mode here
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
@@ -206,7 +232,6 @@ const EditProduct = () => {
 
         fetch(`${import.meta.env.VITE_API_KEY}/upload-mocked-images/${id}`, {
             method: 'POST',
-            mode: 'no-cors',  // Set no-cors mode here
             body: formData,  // Sending the image data
         })
             .then(async (response) => {
@@ -250,17 +275,24 @@ const EditProduct = () => {
             .then(async (response) => {
                 if (response.status === 204) {
                     setSuccessNotification('Update Successful!');
-                    uploadProductImage(productImage);
-                    uploadMockImage(mockedImage);
+                    if (productImage !== undefined) {
+                        uploadProductImage(productImage);
+                    } else { }
+                    if (mockedImage !== undefined) {
+                        uploadMockImage(mockedImage);
+                    }
+                    if ((mockedImage === undefined) && (productImage === undefined)) {
+                        navigate('/product-listing');
+                    }
                 }
             }
             )
             .catch((error) => {
-                console.log('Insert Inspiration error:', error);
-                setErrorNotification('Insert Failed. Please try again later.');
+                console.log('Update Product error:', error);
+                setErrorNotification('Update Failed. Please try again later.');
             });
     };
- 
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>

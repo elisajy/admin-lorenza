@@ -161,16 +161,8 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
         },
         {
             id: 53,
-            name: 'Footer',
-            route: '/footer',
-            order: 5,
-            icon: 'HomeOutlined',
-            parentId: 5,
-        },
-        {
-            id: 54,
-            name: 'Social Links',
-            route: '/social-links',
+            name: 'Company Info',
+            route: '/company-info',
             order: 5,
             icon: 'HomeOutlined',
             parentId: 5,

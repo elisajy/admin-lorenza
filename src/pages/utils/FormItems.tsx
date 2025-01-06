@@ -1,6 +1,7 @@
 import { UploadOutlined } from "@ant-design/icons";
 import { Form, Input, Select, DatePicker, InputNumber, Upload, Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useEffect, useState } from "react";
 const { RangePicker } = DatePicker;
 
 export const getInputFormItem = (
@@ -144,16 +145,17 @@ export const getUploadFormItem = (
     normFile: (e: any) => any, // Corrected the type for a function
     handlePreview: (e: any) => any, // Corrected the type for a function
     checkFileType: (e: any) => any, // Corrected the type for a file validation function
-    initialImageUrls?: any
+    initialImageUrls?: any,
+    multiple?: boolean
 ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
     return (
         <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
-            <Upload name="image" action="" multiple listType="picture" beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
+            <Upload name="image" action="" multiple={multiple || true} listType="picture" beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
                 defaultFileList={
                     initialImageUrls && initialImageUrls.length > 0 ?
                         initialImageUrls.map((url: any, index: any) => ({
                             uid: `-${index + 1}`,
-                            name: `image_${index + 1}.png`,
+                            name: `image_${index + 1}`,
                             status: 'done',
                             url: url
                         }))
@@ -177,12 +179,19 @@ export const getLimitUploadFormItem = (
 ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
     return (
         <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
-            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }} fileList={initialImageUrl ? [{
-                uid: '-1',
-                name: 'existing_image.png',
-                status: 'done',
-                url: initialImageUrl
-            }] : []}>
+            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
+                defaultFileList={
+                    initialImageUrl && initialImageUrl.length > 0 ?
+                        initialImageUrl.map((url: any, index: any) => ({
+                            uid: `-${index + 1}`,
+                            name: `image_${index + 1}`,
+                            status: 'done',
+                            url: url
+                        }))
+                        :
+                        []
+                }
+            >
                 <Button icon={<UploadOutlined />}>Click To Upload</Button>
             </Upload>
         </Form.Item>
