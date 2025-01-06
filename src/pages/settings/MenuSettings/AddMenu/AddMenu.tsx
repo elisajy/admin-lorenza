@@ -17,6 +17,8 @@ const AddMenu = () => {
     const [prdCategory, setPrdCategory] = useState<any>();
     const [tableNameArr, setTableNameArr] = useState<any>([]);
     const [selectedTableName, setSelectedTableName] = useState<any>();
+    const [childArray, setChildArray] = useState<any>();
+    const [subNavs, setSubNavs] = useState<any>([]);
 
     //when open drawer modify the data to val and label
     useEffect(() => {
@@ -34,12 +36,12 @@ const AddMenu = () => {
         {
             key: '1',
             label: 'Basic Information',
-            children: <MenuInfo form={form} data={sideNavDetails} setTableNameArr={setTableNameArr} tableNameArr={tableNameArr} setSelectedTableName={setSelectedTableName} selectedTableName={selectedTableName}/>,
+            children: <MenuInfo form={form} data={sideNavDetails} setTableNameArr={setTableNameArr} tableNameArr={tableNameArr} setSelectedTableName={setSelectedTableName} selectedTableName={selectedTableName} setChildArray={setChildArray} childArray={childArray} />,
         },
         {
             key: '2',
             label: 'Child Settings',
-            children: <ChildSetting childMenu={childMenu} data={sideNavDetails} tableNameArr={tableNameArr} selectedTableName={selectedTableName}/>,
+            children: <ChildSetting childMenu={childArray} data={sideNavDetails} tableNameArr={tableNameArr} selectedTableName={selectedTableName} setSubNavs={setSubNavs} subNavs={subNavs} />,
         },
     ];
 
@@ -73,6 +75,44 @@ const AddMenu = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const submitForm = () => {
+        const formValue = form.getFieldsValue();
+        const updatedData = subNavs.length > 0 ?
+            subNavs.map((x: any, index: any) => {
+                return { name: x.name, path: '/' + (x.name).toLowerCase(), sequence: index + 1, tableName: x.tableName }
+            }) : [];
+        const dataBody = {
+            name: formValue.menuName,
+            tableName: formValue.tableName,
+            path: '/' + (formValue.menuName).toLowerCase(),
+            sequence: formValue.sequence,
+            subNavs: updatedData
+        }
+
+        fetch(`${import.meta.env.VITE_API_KEY}/add-products-sideNav`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataBody)
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Insert Successful!');
+                    navigate('/menu-settings');
+                }
+
+                if (response.status === 409) {
+                    setErrorNotification('Duplicated records. Please check again.');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Insert Menu error:', error);
+                setErrorNotification('Insert Failed. Please try again later.');
+            });
+    };
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>
@@ -81,7 +121,7 @@ const AddMenu = () => {
             </div>
             <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={['1']} onChange={onChange} />;
             <div className="form-action-button-container">
-                {/* <Button type="primary" className='form-button' onClick={submitForm}>Save</Button> */}
+                <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
                 <Button className='form-button' onClick={() => navigate('/menu-settings')}>Cancel</Button>
             </div>
         </>
