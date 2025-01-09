@@ -24,7 +24,6 @@ const AppProtected = () => {
   const navigate = useNavigate();
 
   const logout = () => {
-    console.log(authState)
     fetch(
       `${import.meta.env.VITE_API_KEY}/logout/${authState.userProfile?.id}`,
       {
@@ -36,7 +35,6 @@ const AppProtected = () => {
       }
     )
       .then((response: any) => {
-        console.log(response);
         if (response.status === 200) {
           setSuccessNotification("Logout Successful!");
         }
@@ -60,19 +58,13 @@ const AppProtected = () => {
     navigate("/auth");
   };
 
-  // useEffect(() => {
-  //   if (!cookies.get(aToken)) {
-  //     signOutCleanUp();
-  //   } // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [cookies.get(aToken)]);
-
   const toggleSideNav = () => {
     setCollapsed(!collapsed);
   };
 
   useEffect(() => {
     if (!authState.isLogin && !cookies.get(aToken)) {
-      navigate("/auth");
+      signOutCleanUp();
     } // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
