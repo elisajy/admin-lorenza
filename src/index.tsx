@@ -1,6 +1,6 @@
 import './index.css'
 import { CookiesProvider } from 'react-cookie'
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import { LayoutProvider } from './hooks/layout/LayoutContext';
 import { AuthProvider } from './hooks/auth/AuthContext';

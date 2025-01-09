@@ -60,18 +60,18 @@ const AppProtected = () => {
     navigate("/auth");
   };
 
-  // useEffect(() => {
-  //   if (!cookies.get(rToken)) {
-  //     signOutCleanUp();
-  //   } // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [cookies.get(rToken)]);
+  useEffect(() => {
+    if (!cookies.get(aToken)) {
+      signOutCleanUp();
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookies.get(aToken)]);
 
   const toggleSideNav = () => {
     setCollapsed(!collapsed);
   };
 
   useEffect(() => {
-    if (!authState.isLogin) {
+    if (!authState.isLogin && !cookies.get(aToken)) {
       navigate("/auth");
     } // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
