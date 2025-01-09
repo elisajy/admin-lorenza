@@ -60,11 +60,11 @@ const AppProtected = () => {
     navigate("/auth");
   };
 
-  useEffect(() => {
-    if (!cookies.get(aToken)) {
-      signOutCleanUp();
-    } // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies.get(aToken)]);
+  // useEffect(() => {
+  //   if (!cookies.get(aToken)) {
+  //     signOutCleanUp();
+  //   } // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [cookies.get(aToken)]);
 
   const toggleSideNav = () => {
     setCollapsed(!collapsed);
