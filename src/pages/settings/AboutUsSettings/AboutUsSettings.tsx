@@ -16,7 +16,6 @@ const AboutUsSettings = () => {
     const { setSuccessNotification, setErrorNotification } = useNotification();
 
     useEffect(() => {
-        console.log(cookies)
         fetch(`${import.meta.env.VITE_API_KEY}/about-us`, {
             headers: {
                 'Authorization': `Bearer ${cookies[aToken]}`
