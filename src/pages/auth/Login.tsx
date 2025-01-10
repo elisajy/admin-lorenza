@@ -46,6 +46,7 @@ const Login = () => {
                     return response.json().then((data) => {
                         const isProd = import.meta.env.NODE_ENV === 'production';
                         setSuccessNotification('Login Successful!');
+                        sessionStorage.setItem(aToken, data.token);
                         setCookie(aToken, data.token,
                             {
                                 maxAge: aToken === (import.meta.env.VITE_ACCESS_TOKEN || 'abf-at') ? 3600 : 18000, //refresh token keep for a week

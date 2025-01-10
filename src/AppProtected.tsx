@@ -51,6 +51,7 @@ const AppProtected = () => {
       path: "/",
       domain: isProd ? import.meta.env.VITE_COOKIE_DOMAIN : "localhost",
     });
+    sessionStorage.clear();
     authDispatch({ type: CLEAR_CURRENT_USER });
     navigate("/auth");
   };
@@ -60,7 +61,7 @@ const AppProtected = () => {
   };
 
   useEffect(() => {
-    if (!authState.isLogin && !cookies[aToken]) {
+    if (!sessionStorage.getItem(aToken)) {
       signOutCleanUp();
     } // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
