@@ -1,27 +1,73 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
 import PreviewImage from "../../shared/PreviewImage";
 import TextEditor from "../../shared/TextEditor";
-import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getSelectFormItem } from "../utils/FormItems";
+import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../utils/FormItems";
 
-const AddProject = () => {
-    const pageTitle = 'New Project'
+const EditProject = () => {
+    const pageTitle = 'Edit Project'
+    const location = useLocation();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const [projectDetails, setProjectDetails] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [thumbNail, setThumbnail] = useState<any>();
+    const [segment, setSegment] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
 
-    const uploadCommercialImage = async (file: File, responseId: any) => {
+
+    useEffect(() => {
+        try {
+            const firstSegment = location.pathname.split('/')[1]; // Gets the part after the first slash
+            let routeKey;
+            if (firstSegment === 'project-residentials') {
+                routeKey = 'project-residential-details'
+            } else {
+                routeKey = 'project-commercial-details'
+            }
+            setSegment(firstSegment);
+            fetch(`${import.meta.env.VITE_API_KEY}/${routeKey}/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    form.setFieldsValue({
+                        title: data.title,
+                        description: data.description,
+                        path: data.path,
+                        content: data.content,
+                        thumbnail: [
+                            {
+                                uid: "-2",
+                                status: "done",
+                                url: data.thumbnail,
+                                name: `thumbnail_${id}`,
+                            },
+                        ],
+                    })
+                    setProjectDetails(data);
+                }
+                );
+        } catch (error) {
+            console.error("Error fetching Project Details:", error);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const uploadImage = async (file: File) => {
         const formData = new FormData();
         formData.append('image', file);  // 'image' is the field name expected by the server
-
-        fetch(`${import.meta.env.VITE_API_KEY}/upload-commercial-thumbnail/${responseId}`, {
+        let routeKey;
+        if (segment === 'project-residentials') {
+            routeKey = 'upload-residential-thumbnail'
+        } else {
+            routeKey = 'upload-commercial-thumbnail'
+        }
+        fetch(`${import.meta.env.VITE_API_KEY}/${routeKey}/${id}`, {
             method: 'POST',
             body: formData,  // Sending the image data
         })
@@ -33,88 +79,50 @@ const AddProject = () => {
             }
             )
             .catch((error) => {
-                console.log('Upload Thumbnail error:', error);
-                setErrorNotification('Upload Thumbnail Failed. Please try again later.');
+                console.log('Upload Project error:', error);
+                setErrorNotification('Upload Project Failed. Please try again later.');
             });
-
-    };
-
-    const uploadResidentialImage = async (file: File, responseId: any) => {
-        const formData = new FormData();
-        formData.append('image', file);  // 'image' is the field name expected by the server
-
-        fetch(`${import.meta.env.VITE_API_KEY}/upload-residential-thumbnail/${responseId}`, {
-            method: 'POST',
-            body: formData,  // Sending the image data
-        })
-            .then(async (response) => {
-                if (response.status === 201) {
-                    setSuccessNotification('Upload Thumbnail Successful!');
-                    navigate('/project-settings');
-                }
-            }
-            )
-            .catch((error) => {
-                console.log('Upload Thumbnail error:', error);
-                setErrorNotification('Upload Thumbnail Failed. Please try again later.');
-            });
-
     };
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
-        if ((formValue.thumbNail === undefined) || (formValue.thumbNail && formValue.thumbNail.length === 0)) {
-            return setErrorNotification('Please ensure that image is uploaded.');
-        }
         const dataBody = {
             path: formValue.path,
-            content: formValue.content,
+            content: formValue.content ?? projectDetails.content,
             description: formValue.description,
             title: formValue.title
         }
-
-        if (formValue.projectType === 'residentials') {
-            fetch(`${import.meta.env.VITE_API_KEY}/add-project-residential`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataBody)
-            })
-                .then(async (response) => {
-                    if (response.status === 201) {
-                        setSuccessNotification('Insert Successful!');
-                        const data = await response.json()
-                        uploadResidentialImage(thumbNail, data.id)
-                    }
-                }
-                )
-                .catch((error) => {
-                    console.log('Insert Inspiration error:', error);
-                    setErrorNotification('Insert Failed. Please try again later.');
-                });
+        let routeKey;
+        if (segment === 'project-residentials') {
+            routeKey = 'update-project-residential'
         } else {
-            fetch(`${import.meta.env.VITE_API_KEY}/add-project-commercial`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataBody)
+            routeKey = 'update-project-commercial'
+        }
+        fetch(`${import.meta.env.VITE_API_KEY}/${routeKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...dataBody,
+                id: id
             })
-                .then(async (response) => {
-                    if (response.status === 201) {
-                        setSuccessNotification('Insert Successful!');
-                        const data = await response.json()
-                        uploadCommercialImage(thumbNail, data.id)
+        })
+            .then(async (response) => {
+                if (response.status === 204) {
+                    setSuccessNotification('Update Successful!');
+                    if (thumbNail !== undefined) {
+                        uploadImage(thumbNail)
+                    } else {
+                        navigate('/project-settings');
                     }
                 }
-                )
-                .catch((error) => {
-                    console.log('Insert Project Commercial error:', error);
-                    setErrorNotification('Insert Failed. Please try again later.');
-                });
-        }
-
+            }
+            )
+            .catch((error) => {
+                console.log('Update Project error:', error);
+                setErrorNotification('Update Failed. Please try again later.');
+            });
     };
 
     const checkFileType = (e: any) => {
@@ -148,17 +156,6 @@ const AddProject = () => {
         });
     };
 
-    const typeList = [
-        {
-            val: 'residentials',
-            label: 'Residentials'
-        },
-        {
-            val: 'Commercials',
-            label: 'Commercials'
-        }
-    ]
-
     const items: CollapseProps['items'] = [
         {
             key: '1',
@@ -171,19 +168,13 @@ const AddProject = () => {
                         form={form}
                         className="form-box"
                     >
-                        {
-                            typeList && typeList.length > 0 ?
-                                getSelectFormItem('Project Type', 'projectType', 'Please select a Type.', false, typeList)
-                                :
-                                null
-                        }
                         {getInputFormItem('Title', "title", 'Please fill in the Title.')}
                         {getTextAreaFormItem('Description', "description", 'Please fill in the Description.', 6)}
                         {getInputFormItem('Path', "path", 'Please fill in the Path.')}
                         {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, false)}
+                        {/* {getUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, defaultTN, false)} */}
                     </Form>
                 </div>
-
             </div>,
         },
         {
@@ -228,4 +219,4 @@ const AddProject = () => {
     )
 }
 
-export default AddProject
+export default EditProject

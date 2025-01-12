@@ -68,9 +68,10 @@ const Inspiration = () => {
                     },
                     body: JSON.stringify({ id: record.id })
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchInspirations();
                         }
                     }
                     )
@@ -80,7 +81,7 @@ const Inspiration = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -100,7 +101,9 @@ const Inspiration = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={inspirationList}                >
+                <Table dataSource={inspirationList}
+                    rowKey='id'
+                >
                     <Column title="Title" dataIndex="title" key="name" />
                     <Column title="Path" dataIndex="path" key="name" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

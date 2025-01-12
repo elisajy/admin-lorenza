@@ -152,7 +152,7 @@ const EditPartner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getLimitUploadFormItem('imageUrl', 'Partner Image', normFile, handlePreview, checkFileType)}
+                            {getLimitUploadFormItem('imageUrl', 'Partner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>

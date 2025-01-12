@@ -2,22 +2,34 @@ import { Button, Tabs, TabsProps } from "antd";
 import { useNavigate } from "react-router-dom";
 import Commercials from "./Commercials/Commercials";
 import Residentials from "./Residentials/Residentials";
+import { useState } from "react";
 
 const Projects = () => {
     const navigate = useNavigate();
+    const [tabKey, setTabKey] = useState<any>('1');
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
-            navigate(`/project-settings/edit/${record.key}`)
+            if (tabKey === '1') {
+                navigate(`/project-settings/edit/res/${record.key}`)
+            } else {
+                navigate(`/project-settings/edit/com/${record.key}`)
+            }
         }
 
         if (type === 'add') {
             navigate(`/project-settings/add`)
         }
     }
+
+    const onChange = (key: string) => {
+        setTabKey(key);
+    };
+
+
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: 'Residentails',
+            label: 'Residentials',
             children: <Residentials />,
         },
         {
@@ -38,7 +50,7 @@ const Projects = () => {
                 </div>
             </div>
             <div>
-                <Tabs defaultActiveKey="1" items={items} />
+                <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
             </div>
         </>
     )

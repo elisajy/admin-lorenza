@@ -78,7 +78,7 @@ const EditProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('images', 'Product Image', normPIFile, handlePreview, checkFileType)}
+                        {getUploadFormItem('images', 'Product Image', normPIFile, handlePreview, checkFileType, true)}
                     </Form>
                 </div>
             </div>,
@@ -92,7 +92,7 @@ const EditProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('mockedImages', 'Mocked Image', normMIFile, handlePreview, checkFileType)}
+                        {getUploadFormItem('mockedImages', 'Mocked Image', normMIFile, handlePreview, checkFileType, true)}
                     </Form>
                 </div>
             </div>,
@@ -250,6 +250,14 @@ const EditProduct = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue()
+        if ((formValue.image === undefined) || (formValue.image && formValue.image.length === 0)) {
+            return setErrorNotification('Please ensure that image is uploaded.');
+        }
+
+        if ((formValue.mockedImages === undefined) || (formValue.mockedImages && formValue.mockedImages.length === 0)) {
+            return setErrorNotification('Please ensure that Mocked Image is uploaded.');
+        }
+
         const dataBody = {
             name: formValue.prdName,
             code: formValue.prdCode,

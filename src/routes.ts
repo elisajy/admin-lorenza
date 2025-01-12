@@ -157,6 +157,11 @@ const AddProject = ReactLazyPreload(
 );
 AddProject.preload();
 
+const EditProject = ReactLazyPreload(
+  () => import("./pages/projects/EditProject")
+);
+EditProject.preload();
+
 const CompanyInfo = ReactLazyPreload(
   () => import("./pages/home/CompanyInfo/CompanyInfo")
 );
@@ -172,15 +177,43 @@ const ProductTags = ReactLazyPreload(
 );
 ProductTags.preload();
 
-const AddTag = ReactLazyPreload(
-  () => import("./pages/products/AddTag/AddTag")
-);
+const AddTag = ReactLazyPreload(() => import("./pages/products/AddTag/AddTag"));
 AddTag.preload();
 
 const EditTag = ReactLazyPreload(
   () => import("./pages/products/EditTag/EditTag")
 );
 EditTag.preload();
+
+const ProductSizes = ReactLazyPreload(
+  () => import("./pages/products/ProductSizes")
+);
+ProductSizes.preload();
+
+const AddSize = ReactLazyPreload(
+  () => import("./pages/products/AddSize/AddSize")
+);
+AddTag.preload();
+
+const EditSize = ReactLazyPreload(
+  () => import("./pages/products/EditSize/EditSize")
+);
+EditSize.preload();
+
+const ProductFinishes = ReactLazyPreload(
+  () => import("./pages/products/ProductFinishes")
+);
+ProductSizes.preload();
+
+const AddFinish = ReactLazyPreload(
+  () => import("./pages/products/AddFinish/AddFinish")
+);
+AddTag.preload();
+
+const EditFinish = ReactLazyPreload(
+  () => import("./pages/products/EditFinish/EditFinish")
+);
+EditSize.preload();
 
 export const protectedRoutes: RouteInfo[] = [
   {
@@ -358,6 +391,18 @@ export const protectedRoutes: RouteInfo[] = [
     component: AddProject,
   },
   {
+    id: "Edit Project",
+    name: "Edit Project",
+    path: "/project-residentials/edit/:id",
+    component: EditProject,
+  },
+  {
+    id: "Edit Project",
+    name: "Edit Project",
+    path: "/project-commercials/edit/:id",
+    component: EditProject,
+  },
+  {
     id: "Company Info",
     name: "Company Info",
     path: "/company-info",
@@ -386,5 +431,41 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Edit Tag",
     path: "/product-tags/edit/:id",
     component: EditTag,
+  },
+  {
+    id: "Product Sizes",
+    name: "Product Sizes",
+    path: "/product-sizes",
+    component: ProductSizes,
+  },
+  {
+    id: "Add Size",
+    name: "Edit Size",
+    path: "product-sizes/add",
+    component: AddSize,
+  },
+  {
+    id: "Edit Size",
+    name: "Edit Size",
+    path: "/product-sizes/edit/:id",
+    component: EditSize,
+  },
+  {
+    id: "Product Finishes",
+    name: "Product Finishes",
+    path: "/product-finishes",
+    component: ProductFinishes,
+  },
+  {
+    id: "Add Finish",
+    name: "Edit Finish",
+    path: "product-finishes/add",
+    component: AddFinish,
+  },
+  {
+    id: "Edit Finish",
+    name: "Edit Finish",
+    path: "/product-finishes/edit/:id",
+    component: EditFinish,
   },
 ];

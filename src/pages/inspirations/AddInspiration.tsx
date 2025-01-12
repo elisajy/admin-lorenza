@@ -41,6 +41,9 @@ const AddInspiration = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
+        if ((formValue.thumbNail === undefined) || (formValue.thumbNail && formValue.thumbNail.length === 0)) {
+            return setErrorNotification('Please ensure that image is uploaded.');
+        }
         const dataBody = {
             path: formValue.path,
             content: formValue.content,
@@ -114,7 +117,7 @@ const AddInspiration = () => {
                         {getInputFormItem('Title', "title", 'Please fill in the Title.')}
                         {getTextAreaFormItem('Description', "description", 'Please fill in the Description.', 6)}
                         {getInputFormItem('Path', "path", 'Please fill in the Path.')}
-                        {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType)}
+                        {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, false)}
                     </Form>
                 </div>
 

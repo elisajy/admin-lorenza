@@ -15,11 +15,11 @@ const Commercials = () => {
 
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
-            navigate(`/project-residentials/edit/${record.key}`)
+            navigate(`/project-commercials/edit/${record.key}`)
         }
 
         if (type === 'add') {
-            navigate(`/project-residentials/add`)
+            navigate(`/project-commercials/add`)
         }
     }
 
@@ -68,9 +68,10 @@ const Commercials = () => {
                     },
                     body: JSON.stringify({ id: record.id })
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchCommercials();
                         }
                     }
                     )
@@ -80,14 +81,16 @@ const Commercials = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
 
     return (
         <>
-            <Table dataSource={commercials}                >
+            <Table dataSource={commercials}
+                rowKey='id'
+            >
                 <Column title="Title" dataIndex="title" key="name" />
                 <Column title="Path" dataIndex="path" key="name" />
                 <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

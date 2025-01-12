@@ -71,6 +71,10 @@ const AddBanner = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
+        if ((formValue.image === undefined) || (formValue.image && formValue.image.length === 0)) {
+            return setErrorNotification('Please ensure that image is uploaded.');
+        }
+
         const dataBody = {
             name: formValue.name,
             sequence: formValue.sequence,
@@ -127,7 +131,7 @@ const AddBanner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('image', 'Banner Image', normFile, handlePreview, checkFileType)}
+                            {getUploadFormItem('image', 'Banner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>

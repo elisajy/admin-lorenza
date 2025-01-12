@@ -1,11 +1,10 @@
 import { Button, Card, Form, Upload } from "antd";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import PreviewImage from "../../../shared/PreviewImage";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
-import { imageType } from "../../products/dummyProduct";
-import { getInputFormItem, getInputNumberFormItem, getSelectFormItem, getUploadFormItem } from "../../utils/FormItems";
-import { useNavigate, useParams } from "react-router-dom";
+import { getInputFormItem, getInputNumberFormItem, getUploadFormItem } from "../../utils/FormItems";
 
 const EditBanner = () => {
     const pageTitle = 'Edit Banner'
@@ -157,7 +156,7 @@ const EditBanner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType)}
+                            {getUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>

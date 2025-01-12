@@ -70,9 +70,10 @@ const ProductTags = () => {
                     },
                     body: JSON.stringify(selectedRowKeys)
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchTags();
                         }
                     }
                     )
@@ -82,7 +83,7 @@ const ProductTags = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -103,7 +104,7 @@ const ProductTags = () => {
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
                 <Table dataSource={productTags}
-                    // rowSelection={rowSelection}
+                    rowKey='id'
                 >
                     <Column title="Name" dataIndex="name" key="tagName" />
                     <Column title="Main Category" dataIndex="mainTagName" key="mainCategoryName" />

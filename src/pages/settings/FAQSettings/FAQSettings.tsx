@@ -85,9 +85,10 @@ const FAQSettings = () => {
                         },
                         body: JSON.stringify(dataBody)
                     })
-                        .then((response) => {
+                        .then(async (response) => {
                             if (response.status === 204) {
                                 setSuccessNotification('Delete Successful!')
+                                await fetchFAQQuestion();
                             }
                         }
                         )
@@ -106,9 +107,10 @@ const FAQSettings = () => {
                         },
                         body: JSON.stringify(dataBody)
                     })
-                        .then((response) => {
+                        .then(async (response) => {
                             if (response.status === 204) {
                                 setSuccessNotification('Delete Successful!')
+                                await fetchFAQQuestion();
                             }
                         }
                         )
@@ -119,7 +121,7 @@ const FAQSettings = () => {
                 }
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -140,7 +142,8 @@ const FAQSettings = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={faqList} rowSelection={rowSelection}>
+                <Table dataSource={faqList} rowSelection={rowSelection} rowKey='id'
+                >
                     <Column title="Type" dataIndex="sectionName" key="sectionName" />
                     <Column title="FAQ" dataIndex="question" key="question" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

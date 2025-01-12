@@ -74,7 +74,7 @@ const CompanyInfo = () => {
                 </div>
             </div>
             <div>
-                <Table dataSource={companyInfo}                >
+                <Table dataSource={companyInfo}>
                     <Column title="Title" dataIndex="title" key="name" />
                     <Column title="Value" dataIndex="value" key="value" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

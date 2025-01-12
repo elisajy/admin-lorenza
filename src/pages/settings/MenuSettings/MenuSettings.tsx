@@ -72,9 +72,10 @@ const MenuSettings = () => {
                     },
                     body: JSON.stringify({ id: record.id })
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchProductSideNavs();
                         }
                     }
                     )
@@ -84,7 +85,7 @@ const MenuSettings = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -105,7 +106,8 @@ const MenuSettings = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={prdSideNavs}                >
+                <Table dataSource={prdSideNavs} rowKey='id'
+                >
                     <Column title="Main Title" dataIndex="name" key="mainCategory" />
                     <Column title="Number of Child" dataIndex="childNum" key="childNum" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

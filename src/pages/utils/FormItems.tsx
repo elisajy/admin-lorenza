@@ -145,12 +145,13 @@ export const getUploadFormItem = (
     normFile: (e: any) => any, // Corrected the type for a function
     handlePreview: (e: any) => any, // Corrected the type for a function
     checkFileType: (e: any) => any, // Corrected the type for a file validation function
+    removeIcon: boolean = true,
     initialImageUrls?: any,
     multiple?: boolean
 ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
     return (
         <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
-            <Upload name="image" action="" multiple={multiple || true} listType="picture" beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
+            <Upload name="image" action="" multiple={multiple || true} listType="picture" beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: removeIcon }}
                 defaultFileList={
                     initialImageUrls && initialImageUrls.length > 0 ?
                         initialImageUrls.map((url: any, index: any) => ({
@@ -175,11 +176,12 @@ export const getLimitUploadFormItem = (
     normFile: (e: any) => any, // Corrected the type for a function
     handlePreview: (e: any) => any, // Corrected the type for a function
     checkFileType: (e: any) => any, // Corrected the type for a file validation function
+    removeIcon: boolean = true,
     initialImageUrl?: any
 ): React.ReactElement<any, string | React.JSXElementConstructor<any>> => {
     return (
         <Form.Item getValueFromEvent={normFile} name={formItemName} label={label} valuePropName="fileList">
-            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: false }}
+            <Upload name="image" action="" listType="picture" maxCount={1} beforeUpload={checkFileType} onPreview={handlePreview} showUploadList={{ showRemoveIcon: removeIcon }}
                 defaultFileList={
                     initialImageUrl && initialImageUrl.length > 0 ?
                         initialImageUrl.map((url: any, index: any) => ({

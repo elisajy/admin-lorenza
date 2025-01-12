@@ -68,9 +68,10 @@ const FAQSectionSettings = () => {
                     },
                     body: JSON.stringify({ id: record.id })
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchFAQSection();
                         }
                     }
                     )
@@ -80,7 +81,7 @@ const FAQSectionSettings = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -100,7 +101,9 @@ const FAQSectionSettings = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={faqSection}                >
+                <Table dataSource={faqSection}
+                    rowKey='id'
+                >
                     <Column title="Type" dataIndex="name" key="name" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />
                     <Column

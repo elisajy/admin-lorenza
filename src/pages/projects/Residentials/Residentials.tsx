@@ -68,9 +68,10 @@ const Residentials = () => {
                     },
                     body: JSON.stringify({ id: record.id })
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchResidentials();
                         }
                     }
                     )
@@ -80,14 +81,16 @@ const Residentials = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
 
     return (
         <>
-            <Table dataSource={residentials}                >
+            <Table dataSource={residentials}
+                rowKey='id'
+            >
                 <Column title="Title" dataIndex="title" key="name" />
                 <Column title="Path" dataIndex="path" key="name" />
                 <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

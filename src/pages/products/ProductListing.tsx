@@ -60,25 +60,24 @@ const ProductListing = () => {
             message: 'This action will delete selected record(s).',
             buttonText: 'Confirm',
             action: async () => {
-                
-                // fetch(`${import.meta.env.VITE_API_KEY}/delete-product/${record.id}`, {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({ id: record.id })
-                // })
-                //     .then((response) => {
-                //         if (response.status === 204) {
-                //             setSuccessNotification('Delete Successful!')
-                //         }
-                //     }
-                //     )
-                //     .catch((error) => {
-                //         console.log('Delete FAQ Section error:', error);
-                //         setErrorNotification('Delete Failed. Please try again later.');
-                //     });
-
+                fetch(`${import.meta.env.VITE_API_KEY}/delete-product/${record.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: record.id })
+                })
+                    .then(async (response) => {
+                        if (response.status === 204) {
+                            setSuccessNotification('Delete Successful!')
+                            await fetchPrd();
+                        }
+                    }
+                    )
+                    .catch((error) => {
+                        console.log('Delete FAQ Section error:', error);
+                        setErrorNotification('Delete Failed. Please try again later.');
+                    });
                 setShowModal(false);
                 setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
@@ -103,6 +102,7 @@ const ProductListing = () => {
             <div>
                 <Table dataSource={productListing}
                     rowSelection={rowSelection}
+                    rowKey='id'
                 >
                     <Column title="Category" dataIndex="category" key="category" />
                     <Column title="Name" dataIndex="name" key="name" />

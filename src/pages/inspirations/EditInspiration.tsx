@@ -149,7 +149,7 @@ const EditInspiration = () => {
                         {getInputFormItem('Title', "title", 'Please fill in the Title.')}
                         {getTextAreaFormItem('Description', "description", 'Please fill in the Description.', 6)}
                         {getInputFormItem('Path', "path", 'Please fill in the Path.')}
-                        {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType)}
+                        {getLimitUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, false)}
                         {/* {getUploadFormItem('thumbnail', 'Thumbnail', normFile, handlePreview, checkFileType, defaultTN, false)} */}
                     </Form>
                 </div>

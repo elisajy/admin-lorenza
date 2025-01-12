@@ -72,9 +72,10 @@ const Banners = () => {
                     },
                     body: JSON.stringify(dataBody)
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.status === 204) {
                             setSuccessNotification('Delete Successful!')
+                            await fetchPartners();
                         }
                     }
                     )
@@ -84,7 +85,7 @@ const Banners = () => {
                     });
 
                 setShowModal(false);
-                setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
+                // setRefreshKey(prev => prev + 1); // Forces useEffect to refetch
             }
         })
     };
@@ -104,7 +105,9 @@ const Banners = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={banners}                >
+                <Table dataSource={banners}
+                    rowKey='id'
+                >
                     <Column title="Name" dataIndex="name" key="name" />
                     <Column title="Sequence" dataIndex="sequence" key="sequence" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

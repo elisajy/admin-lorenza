@@ -96,6 +96,22 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             parentId: 1,
         },
         {
+            id: 14,
+            name: 'Product Sizes',
+            route: '/product-sizes',
+            order: 2,
+            icon: 'ProductOutlined',
+            parentId: 1,
+        },
+        {
+            id: 15,
+            name: 'Product Finishes',
+            route: '/product-finishes',
+            order: 2,
+            icon: 'ProductOutlined',
+            parentId: 1,
+        },
+        {
             id: 3,
             name: 'Menu',
             route: '/menu',

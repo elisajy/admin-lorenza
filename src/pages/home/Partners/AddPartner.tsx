@@ -71,6 +71,10 @@ const AddPartner = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
+        if ((formValue.image === undefined) || (formValue.image && formValue.image.length === 0)) {
+            return setErrorNotification('Please ensure that image is uploaded.');
+        }
+        
         const dataBody = {
             name: formValue.name,
             sequence: formValue.sequence,
@@ -125,7 +129,7 @@ const AddPartner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getLimitUploadFormItem('image', 'Partner Image', normFile, handlePreview, checkFileType)}
+                            {getLimitUploadFormItem('image', 'Partner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>
