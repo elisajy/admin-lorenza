@@ -112,21 +112,29 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             parentId: 1,
         },
         {
-            id: 3,
-            name: 'Menu',
-            route: '/menu',
-            order: 3,
-            icon: 'SettingOutlined',
-            parentId: null,
+            id: 16,
+            name: 'Product Colors',
+            route: '/product-colors',
+            order: 2,
+            icon: 'ProductOutlined',
+            parentId: 1,
         },
-        {
-            id: 31,
-            name: 'Menu Settings',
-            route: '/menu-settings',
-            order: 1,
-            icon: 'SettingOutlined',
-            parentId: 3
-        },
+        // {
+        //     id: 3,
+        //     name: 'Menu',
+        //     route: '/menu',
+        //     order: 3,
+        //     icon: 'SettingOutlined',
+        //     parentId: null,
+        // },
+        // {
+        //     id: 31,
+        //     name: 'Menu Settings',
+        //     route: '/menu-settings',
+        //     order: 1,
+        //     icon: 'SettingOutlined',
+        //     parentId: 3
+        // },
         // {
         //     id: 32,
         //     name: 'Menu Listing Settings',
@@ -270,7 +278,7 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             trigger={null}
             theme="dark"
             className={collapsed ? "slider-container-collapse" : "slider-container"}
-            style={{ textAlign: 'left' }}
+            style={{ textAlign: 'left', overflowY: 'auto' }}
         >
             {/* <div className={collapsed ? 'small-logo' : 'side-nav-logo'}>
             <img src={smallIcon} alt="small-icon" />

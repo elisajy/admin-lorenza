@@ -193,7 +193,7 @@ ProductSizes.preload();
 const AddSize = ReactLazyPreload(
   () => import("./pages/products/AddSize/AddSize")
 );
-AddTag.preload();
+AddSize.preload();
 
 const EditSize = ReactLazyPreload(
   () => import("./pages/products/EditSize/EditSize")
@@ -203,17 +203,32 @@ EditSize.preload();
 const ProductFinishes = ReactLazyPreload(
   () => import("./pages/products/ProductFinishes")
 );
-ProductSizes.preload();
+ProductFinishes.preload();
 
 const AddFinish = ReactLazyPreload(
   () => import("./pages/products/AddFinish/AddFinish")
 );
-AddTag.preload();
+AddFinish.preload();
 
 const EditFinish = ReactLazyPreload(
   () => import("./pages/products/EditFinish/EditFinish")
 );
-EditSize.preload();
+EditFinish.preload();
+
+const ProductColors = ReactLazyPreload(
+  () => import("./pages/products/ProductColors")
+);
+ProductColors.preload();
+
+const AddColor = ReactLazyPreload(
+  () => import("./pages/products/AddColor/AddColor")
+);
+AddColor.preload();
+
+const EditColor = ReactLazyPreload(
+  () => import("./pages/products/EditColor/EditColor")
+);
+EditColor.preload();
 
 export const protectedRoutes: RouteInfo[] = [
   {
@@ -467,5 +482,23 @@ export const protectedRoutes: RouteInfo[] = [
     name: "Edit Finish",
     path: "/product-finishes/edit/:id",
     component: EditFinish,
+  },
+  {
+    id: "Product Colors",
+    name: "Product Colors",
+    path: "/product-colors",
+    component: ProductColors,
+  },
+  {
+    id: "Add Color",
+    name: "Edit Color",
+    path: "product-colors/add",
+    component: AddColor,
+  },
+  {
+    id: "Edit Color",
+    name: "Edit Color",
+    path: "/product-colors/edit/:id",
+    component: EditColor,
   },
 ];
