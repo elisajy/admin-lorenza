@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
-import { Button, Card, Form } from "antd";
+import { Button, Card, Form, Upload } from "antd";
 import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../../utils/FormItems";
+import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
 
 const EditCompanyInfo = () => {
     const pageTitle = 'Edit Company Info'
@@ -10,7 +11,10 @@ const EditCompanyInfo = () => {
     const { key } = useParams<{ key: string }>();
     const [form] = Form.useForm();
     const { setSuccessNotification, setErrorNotification } = useNotification();
-
+    const [storyImage, setStoryImage] = useState<any>();
+    const [displayImg, setDisplayImg] = useState({
+        previewVisible: false, previewImage: '', previewTitle: ''
+    });
     const getKeyName = (key: string) => {
         switch (key) {
             case 'COMPANY_NAME':
@@ -29,6 +33,10 @@ const EditCompanyInfo = () => {
                 return 'Facebook Link';
             case 'INSTAGRAM':
                 return 'Instagram Link';
+            case 'OUR_STORY_TEXT':
+                return 'Our Story - Text';
+            case 'OUR_STORY_IMG':
+                return 'Our Story - Image';
             default:
                 return null;
         }
@@ -78,6 +86,37 @@ const EditCompanyInfo = () => {
             });
     };
 
+    const checkFileType = (e: any) => {
+        if (e.type === "image/jpeg" || e.type === "image/png") {
+            if (e.size > 1000000) {
+                setErrorNotification('Image file size is more than 1MB. Please try a smaller size file.');
+                return Upload.LIST_IGNORE;
+            }
+            return false;
+        }
+        setErrorNotification('Only .jpg, .jpeg and .png image file format are accepted!');
+        return Upload.LIST_IGNORE;
+    };
+
+    //upload file
+    const normFile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        setStoryImage(e.file);
+        return e && e.fileList;
+    };
+
+    // Display image preview
+    const handlePreview = async (file: any) => {
+        file = await handleImagePreview(file);
+        setDisplayImg({
+            previewVisible: true,
+            previewImage: file.url || file.preview,
+            previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
+        });
+    };
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>
@@ -87,14 +126,40 @@ const EditCompanyInfo = () => {
             <Card title="Edit Company Info" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
-                        <Form
-                            layout='vertical'
-                            form={form}
-                            className="form-box"
-                        >
-                            {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
-                            {getInputFormItem('Value', "value", 'Please fill in the value.')}
-                        </Form>
+                        {
+                            key?.includes('OUR_STORY') ?
+                                <>
+                                    {
+                                        key === 'OUR_STORY_TEXT' ?
+                                            <Form
+                                                layout='vertical'
+                                                form={form}
+                                                className="form-box"
+                                            >
+                                                {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
+                                                {getTextAreaFormItem('Text', "value", 'Please fill in the text.', 6)}
+                                            </Form>
+                                            :
+                                            <Form
+                                                layout='vertical'
+                                                form={form}
+                                                className="form-box"
+                                            >
+                                                {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
+                                                {getLimitUploadFormItem('thumbnail', 'Image', normFile, handlePreview, checkFileType, false)}
+                                                </Form>
+                                    }
+                                </>
+                                :
+                                <Form
+                                    layout='vertical'
+                                    form={form}
+                                    className="form-box"
+                                >
+                                    {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
+                                    {getInputFormItem('Value', "value", 'Please fill in the value.')}
+                                </Form>
+                        }
                     </div>
                 </div>
             </Card>

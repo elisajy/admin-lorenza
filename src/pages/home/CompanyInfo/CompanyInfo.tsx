@@ -36,6 +36,10 @@ const CompanyInfo = () => {
                 return 'Facebook Link';
             case 'INSTAGRAM':
                 return 'Instagram Link';
+            case 'OUR_STORY_TEXT':
+                return 'Our Story - Text';
+            case 'OUR_STORY_IMG':
+                return 'Our Story - Image';
             default:
                 return null;
         }
