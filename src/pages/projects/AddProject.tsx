@@ -63,7 +63,7 @@ const AddProject = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
-        if ((formValue.thumbNail === undefined) || (formValue.thumbNail && formValue.thumbNail.length === 0)) {
+        if ((formValue.thumbnail === undefined) || (formValue.thumbnail && formValue.thumbnail.length === 0)) {
             return setErrorNotification('Please ensure that image is uploaded.');
         }
         const dataBody = {

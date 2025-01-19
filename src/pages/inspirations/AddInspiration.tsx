@@ -1,5 +1,5 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
@@ -13,6 +13,7 @@ const AddInspiration = () => {
     const [form] = Form.useForm();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [thumbNail, setThumbnail] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
@@ -40,8 +41,9 @@ const AddInspiration = () => {
     };
 
     const submitForm = () => {
+        console.log(editorValue);
         const formValue = form.getFieldsValue();
-        if ((formValue.thumbNail === undefined) || (formValue.thumbNail && formValue.thumbNail.length === 0)) {
+        if ((formValue.thumbnail === undefined) || (formValue.thumbnail && formValue.thumbnail.length === 0)) {
             return setErrorNotification('Please ensure that image is uploaded.');
         }
         const dataBody = {
@@ -50,6 +52,9 @@ const AddInspiration = () => {
             description: formValue.description,
             title: formValue.title
         }
+
+        return console.log(dataBody);
+
         fetch(`${import.meta.env.VITE_API_KEY}/add-inspiration`, {
             method: 'POST',
             headers: {
@@ -134,7 +139,7 @@ const AddInspiration = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'}/>
+                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
                         </Form.Item>
 
                         <br />

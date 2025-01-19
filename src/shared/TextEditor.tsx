@@ -1,36 +1,59 @@
-import React, { useEffect, useRef } from "react";
-import ReactQuill from "react-quill";
+import React, { useEffect, useRef, useState } from "react";
+import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill/dist/quill.snow.css";
-
-interface OnChangeHandler {
-    (e: any): void;
-}
 
 type Props = {
     routeName: string;
-    value?: string;
-    onChange?: OnChangeHandler;
+    editorValue: any
+    setEditorValue: React.Dispatch<React.SetStateAction<string>>;
     placeholder?: string;
-    className?: any;
+    className?: string;
 };
 
 const TextEditor: React.FC<Props> = ({
     routeName,
-    value,
-    onChange,
+    editorValue,
+    setEditorValue,
     placeholder,
     className,
 }) => {
     const quillRef = useRef<ReactQuill | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
-    // Ensure quillRef is ready to be used
-    useEffect(() => {
-        if (quillRef.current) {
-            console.log('Quill editor is ready');
+    // Debounce function
+    const debounce = (func: (...args: any[]) => void, wait: number) => {
+        let timeout: ReturnType<typeof setTimeout>;
+        return (...args: any[]) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    };
+
+    const debouncedSetEditorValue = useRef(
+        debounce((value: string) => {
+            setEditorValue(value);
+        }, 300)
+    );
+
+    const handleChange = (content: string, delta: any, source: string) => {
+        if (source === "user") {
+            debouncedSetEditorValue.current(content);
         }
-    }, []); // Runs only once when the component is mounted
+    };
 
-    // Custom handler for image upload
+    // Preserve selection after state update
+    useEffect(() => {
+        if (isUpdating && quillRef.current) {
+            const editor = quillRef.current.getEditor();
+            const currentSelection = editor.getSelection();
+            if (currentSelection) {
+                editor.setSelection(currentSelection);
+            }
+            setIsUpdating(false);
+        }
+    }, [editorValue]);
+
+    // Handle image upload
     const imageHandler = () => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
@@ -39,104 +62,42 @@ const TextEditor: React.FC<Props> = ({
 
         input.onchange = async () => {
             const file = input.files?.[0];
-            if (file) {
+            if (file && quillRef.current) {
                 const formData = new FormData();
                 formData.append("image", file);
 
-                const fileName = file.name;
-                if (quillRef.current) {
-                    await uploadFiles(formData, fileName, quillRef.current, routeName);
+                const apiUrl = `${import.meta.env.VITE_API_KEY}${routeName}`;
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: "POST",
+                        body: formData,
+                    });
+                    const responseData = await response.json();
+                    const range = quillRef.current.getEditorSelection();
+
+                    if (range && responseData.imageUrls?.length) {
+                        quillRef.current
+                            .getEditor()
+                            .insertEmbed(range.index, "image", responseData.imageUrls[0]);
+                    }
+                } catch (error) {
+                    console.error("Image upload failed:", error);
                 }
             }
         };
     };
-
-    // const uploadFiles = async (
-    //     uploadFileObj: any,
-    //     filename: string,
-    //     quillObj: ReactQuill,
-    //     routeName: string
-    // ) => {
-    //     const apiUrl = `${import.meta.env.VITE_API_KEY}${routeName}`;
-
-    //     try {
-    //         if (uploadFileObj !== undefined) {
-    //             const response = await fetch(apiUrl, {
-    //                 method: "POST",
-    //                 body: uploadFileObj,
-    //             });
-
-    //             const responseData = await response.json();
-    //             const range = quillObj.getEditorSelection();
-
-    //             if (range && responseData && quillObj) {
-    //                 quillObj
-    //                     .getEditor()
-    //                     .insertEmbed(range.index, "image", responseData.imageUrls[0]);
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.log("uploadFiles : " + error);
-    //     }
-    // };
-
-    const uploadFiles = async (
-        uploadFileObj: any,
-        filename: string,
-        quillObj: ReactQuill,
-        routeName: string
-    ) => {
-        const apiUrl = `${import.meta.env.VITE_API_KEY}${routeName}`;
-
-        try {
-            if (uploadFileObj !== undefined) {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    body: uploadFileObj,
-                });
-
-                const responseData = await response.json();
-                console.log('Response Data:', responseData); // Debugging the response
-
-                const range = quillObj.getEditorSelection();
-                if (range && responseData && responseData.imageUrls?.length > 0) {
-                    const imageUrl = responseData.imageUrls[0];
-                    console.log('Inserting image:', imageUrl); // Debugging image insertion
-
-                    try {
-                        quillObj.getEditor().insertEmbed(range.index, 'image', imageUrl);
-                    } catch (error) {
-                        console.error('Error inserting image:', error);
-                    }
-                } else {
-                    console.error("No valid image URL or range");
-                }
-            }
-        } catch (error) {
-            console.log('uploadFiles : ' + error);
-        }
-    };
-
 
     const modules = {
         toolbar: {
             container: [
                 [{ header: [1, 2, false] }],
                 ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                    { list: "ordered" },
-                    { list: "bullet" },
-                    { indent: "-1" },
-                    { indent: "+1" },
-                ],
-                ["link", "image"], // Adding the 'image' option here
+                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+                ["link", "image"],
                 ["clean"],
             ],
             handlers: {
                 image: imageHandler,
-            },
-            clipboard: {
-                matchVisual: false,
             },
         },
     };
@@ -152,24 +113,17 @@ const TextEditor: React.FC<Props> = ({
         "bullet",
         "indent",
         "link",
-        "code",
+        "image",
     ];
-
-    const test = () => {
-        if (quillRef.current) {
-            console.log(quillRef.current.getEditor());
-            console.log(quillRef.current.getEditorContents());
-        }
-    };
 
     return (
         <ReactQuill
             ref={quillRef}
             theme="snow"
-            value={value || ""}
+            value={editorValue}
+            onChange={handleChange}
             modules={modules}
             formats={formats}
-            onChange={test}
             placeholder={placeholder}
             className={className}
         />
