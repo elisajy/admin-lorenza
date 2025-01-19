@@ -211,7 +211,7 @@ const AddProduct = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
-        if ((formValue.image === undefined) || (formValue.image && formValue.image.length === 0)) {
+        if ((formValue.images === undefined) || (formValue.images && formValue.images.length === 0)) {
             return setErrorNotification('Please ensure that image is uploaded.');
         }
 
