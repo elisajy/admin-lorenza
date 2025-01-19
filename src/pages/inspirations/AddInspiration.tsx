@@ -134,7 +134,7 @@ const AddInspiration = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} />
+                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'}/>
                         </Form.Item>
 
                         <br />

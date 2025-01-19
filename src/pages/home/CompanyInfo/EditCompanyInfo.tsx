@@ -4,6 +4,7 @@ import useNotification from "../../../hooks/layout/useNotification";
 import { Button, Card, Form, Upload } from "antd";
 import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../../utils/FormItems";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
+import PreviewImage from "../../../shared/PreviewImage";
 
 const EditCompanyInfo = () => {
     const pageTitle = 'Edit Company Info'
@@ -49,7 +50,14 @@ const EditCompanyInfo = () => {
                 .then((data) => {
                     form.setFieldsValue({
                         title: getKeyName(data.key),
-                        value: data.value
+                        value: data.key !== 'OUR_STORY_IMG' ? data.value : [
+                            {
+                                uid: "-2",
+                                status: "done",
+                                url: data.value,
+                                name: `img_${data.key}`,
+                            },
+                        ],
                     })
                 }
                 );
@@ -76,7 +84,11 @@ const EditCompanyInfo = () => {
             .then(async (response) => {
                 if (response.status === 204) {
                     setSuccessNotification('Update Successful!');
-                    navigate('/company-info');
+                    if (key === 'OUR_STORY_IMG') {
+                        uploadImage(storyImage);
+                    } else {
+                        navigate('/company-info');
+                    }
                 }
             }
             )
@@ -117,6 +129,27 @@ const EditCompanyInfo = () => {
         });
     };
 
+    const uploadImage = async (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);  // 'image' is the field name expected by the server
+
+        fetch(`${import.meta.env.VITE_API_KEY}/modify-our-story-image/${key}`, {
+            method: 'POST',
+            body: formData,  // Sending the image data
+        })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    setSuccessNotification('Upload Image Successful!');
+                    navigate('/company=info');
+                }
+            }
+            )
+            .catch((error) => {
+                console.log('Upload Image error:', error);
+                setErrorNotification('Upload Image Failed. Please try again later.');
+            });
+    };
+
     return (
         <>
             <div style={{ textAlign: 'left' }}>
@@ -146,8 +179,8 @@ const EditCompanyInfo = () => {
                                                 className="form-box"
                                             >
                                                 {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
-                                                {getLimitUploadFormItem('thumbnail', 'Image', normFile, handlePreview, checkFileType, false)}
-                                                </Form>
+                                                {getLimitUploadFormItem('value', 'Image', normFile, handlePreview, checkFileType, false)}
+                                            </Form>
                                     }
                                 </>
                                 :
@@ -167,6 +200,7 @@ const EditCompanyInfo = () => {
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
                 <Button className='form-button' onClick={() => navigate('/company-info')}>Cancel</Button>
             </div>
+            <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>
     )
 };

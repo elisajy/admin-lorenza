@@ -183,30 +183,6 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             icon: 'BulbOutlined',
             parentId: 2,
         },
-        // {
-        //     id: 3,
-        //     name: 'Menu',
-        //     route: '/menu',
-        //     order: 3,
-        //     icon: 'SettingOutlined',
-        //     parentId: null,
-        // },
-        // {
-        //     id: 31,
-        //     name: 'Menu Settings',
-        //     route: '/menu-settings',
-        //     order: 1,
-        //     icon: 'SettingOutlined',
-        //     parentId: 3
-        // },
-        // {
-        //     id: 32,
-        //     name: 'Menu Listing Settings',
-        //     route: '/menu-listing-settings',
-        //     order: 1,
-        //     icon: 'SettingOutlined',
-        //     parentId: 3
-        // },
         {
             id: 4,
             name: 'FAQ',
@@ -231,6 +207,30 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             icon: 'SettingOutlined',
             parentId: 4
         },
+        {
+            id: 3,
+            name: 'Menu',
+            route: '/menu',
+            order: 3,
+            icon: 'SettingOutlined',
+            parentId: null,
+        },
+        {
+            id: 31,
+            name: 'Menu Settings',
+            route: '/menu-settings',
+            order: 1,
+            icon: 'SettingOutlined',
+            parentId: 3
+        },
+        {
+            id: 32,
+            name: 'Menu Listing Settings',
+            route: '/menu-listing-settings',
+            order: 1,
+            icon: 'SettingOutlined',
+            parentId: 3
+        }
     ]
 
     useEffect(() => {
@@ -270,7 +270,7 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             trigger={null}
             theme="dark"
             className={collapsed ? "slider-container-collapse" : "slider-container"}
-            style={{ textAlign: 'left' }}
+            style={{ textAlign: 'left', overflowY: 'auto' }}
         >
             {/* <div className={collapsed ? 'small-logo' : 'side-nav-logo'}>
             <img src={smallIcon} alt="small-icon" />

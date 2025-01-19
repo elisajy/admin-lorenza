@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import { getInputFormItem } from "../../utils/FormItems";
 
-const AddSize = () => {
-    const pageTitle = 'New Size'
+const AddColor = () => {
+    const pageTitle = 'New Color'
     const [form] = Form.useForm();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const navigate = useNavigate();
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
-        fetch(`${import.meta.env.VITE_API_KEY}/add-size`, {
+        fetch(`${import.meta.env.VITE_API_KEY}/add-color`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -21,12 +21,12 @@ const AddSize = () => {
             .then((response) => {
                 if (response.status === 201) {
                     setSuccessNotification('Insert Successful!')
-                    navigate('/product-sizes');
+                    navigate('/product-colors');
                 }
             }
             )
             .catch((error) => {
-                console.log('Insert Product Size error:', error);
+                console.log('Insert Product Color error:', error);
                 setErrorNotification('Insert Failed. Please try again later.');
             });
     };
@@ -38,7 +38,7 @@ const AddSize = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Card title="Size Info" className="form-card-container">
+            <Card title="Color Info" className="form-card-container">
                 <div className="form-container">
                     <div className="form-wrap">
                         <Form
@@ -46,18 +46,18 @@ const AddSize = () => {
                             form={form}
                             className="form-box"
                         >
-                            {getInputFormItem('Size Name', "name", 'Please fill in the Size Name.')}
-                            {getInputFormItem('Size Value', "value", 'Please fill in the Size Value.')}
+                            {getInputFormItem('Color Name', "name", 'Please fill in the Color Name.')}
+                            {getInputFormItem('Color Value', "value", 'Please fill in the Color Value.')}
                         </Form>
                     </div>
                 </div>
             </Card>
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
-                <Button className='form-button' onClick={() => navigate('/product-sizes')}>Cancel</Button>
+                <Button className='form-button' onClick={() => navigate('/product-colors')}>Cancel</Button>
             </div>
         </>
     )
 }
 
-export default AddSize
+export default AddColor

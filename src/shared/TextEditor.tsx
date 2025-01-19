@@ -1,7 +1,7 @@
-// TextEditor.tsx
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
 interface OnChangeHandler {
     (e: any): void;
 }
@@ -14,80 +14,113 @@ type Props = {
     className?: any;
 };
 
-const TextEditor: React.FC<Props> = ({ routeName, value, onChange, placeholder, className }) => {
-    let quillRef = useRef<ReactQuill>(null);
-    let reactQuillRef: ReactQuill | null;
+const TextEditor: React.FC<Props> = ({
+    routeName,
+    value,
+    onChange,
+    placeholder,
+    className,
+}) => {
+    const quillRef = useRef<ReactQuill | null>(null);
+
+    // Ensure quillRef is ready to be used
+    useEffect(() => {
+        if (quillRef.current) {
+            console.log('Quill editor is ready');
+        }
+    }, []); // Runs only once when the component is mounted
 
     // Custom handler for image upload
     const imageHandler = () => {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
         input.click();
 
         input.onchange = async () => {
             const file = input.files?.[0];
             if (file) {
                 const formData = new FormData();
-                formData.append('file', file);
+                formData.append("image", file);
 
-                var fileName = file.name;
-                // const res = await uploadFiles(file, fileName, reactQuillRef, routeName)
-                // try {
-                //     const response = await fetch('https://your-server.com/upload', {
-                //         method: 'POST',
-                //         body: formData,
-                //     });
-                //     const data = await response.json();
-
-                //     const quill = (window as any).quill; // Access quill instance
-                //     const range = quill.getSelection();
-                //     quill.insertEmbed(range.index, 'image', data.url); // Use the returned image URL
-                // } catch (error) {
-                //     console.error('Upload failed:', error);
-                // }
+                const fileName = file.name;
+                if (quillRef.current) {
+                    await uploadFiles(formData, fileName, quillRef.current, routeName);
+                }
             }
         };
     };
 
-    // const uploadFiles = (uploadFileObj: File, filename: string, quillObj: ReactQuill | null, routeName: string) => {
-    //     //To Upload in root folder  
-    //     var apiUrl = `${import.meta.env.VITE_API_KEY}/upload-commercial-thumbnail/${responseId}`;
-    //     const digestCache: IDigestCache = this.props.context.serviceScope.consume(DigestCache.serviceKey);
-    //     digestCache.fetchDigest(
-    //         this.props.context.pageContext.web.serverRelativeUrl)
-    //         .then(async (digest: string): Promise<void> => {
-    //             try {
-    //                 if (uploadFileObj != '') {
-    //                     fetch(apiUrl, {
-    //                         method: 'POST',
-    //                         headers: {
-    //                             'Content-Type': 'application/json;odata=verbose',
-    //                             "X-RequestDigest": digest
-    //                         },
-    //                         body: uploadFileObj // This is your file object  
-    //                     }).then((response) => {
-    //                         console.log(response);
-    //                         const range = quillObj.getEditorSelection();
+    // const uploadFiles = async (
+    //     uploadFileObj: any,
+    //     filename: string,
+    //     quillObj: ReactQuill,
+    //     routeName: string
+    // ) => {
+    //     const apiUrl = `${import.meta.env.VITE_API_KEY}${routeName}`;
 
-    //                         var res = siteUrl + "/" + listName + "/" + filename;
+    //     try {
+    //         if (uploadFileObj !== undefined) {
+    //             const response = await fetch(apiUrl, {
+    //                 method: "POST",
+    //                 body: uploadFileObj,
+    //             });
 
-    //                         quillObj.getEditor().insertEmbed(range.index, 'image', res);
-    //                     }).catch((error) =>
-    //                         console.log(error)
-    //                     );
-    //                 }
+    //             const responseData = await response.json();
+    //             const range = quillObj.getEditorSelection();
+
+    //             if (range && responseData && quillObj) {
+    //                 quillObj
+    //                     .getEditor()
+    //                     .insertEmbed(range.index, "image", responseData.imageUrls[0]);
     //             }
-    //             catch (error) {
-    //                 console.log('uploadFiles : ' + error);
-    //             }
+    //         }
+    //     } catch (error) {
+    //         console.log("uploadFiles : " + error);
+    //     }
+    // };
 
-    //         })
-    // }
+    const uploadFiles = async (
+        uploadFileObj: any,
+        filename: string,
+        quillObj: ReactQuill,
+        routeName: string
+    ) => {
+        const apiUrl = `${import.meta.env.VITE_API_KEY}${routeName}`;
+
+        try {
+            if (uploadFileObj !== undefined) {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    body: uploadFileObj,
+                });
+
+                const responseData = await response.json();
+                console.log('Response Data:', responseData); // Debugging the response
+
+                const range = quillObj.getEditorSelection();
+                if (range && responseData && responseData.imageUrls?.length > 0) {
+                    const imageUrl = responseData.imageUrls[0];
+                    console.log('Inserting image:', imageUrl); // Debugging image insertion
+
+                    try {
+                        quillObj.getEditor().insertEmbed(range.index, 'image', imageUrl);
+                    } catch (error) {
+                        console.error('Error inserting image:', error);
+                    }
+                } else {
+                    console.error("No valid image URL or range");
+                }
+            }
+        } catch (error) {
+            console.log('uploadFiles : ' + error);
+        }
+    };
+
 
     const modules = {
         toolbar: {
-            container: [  // <--- Correct structure for Quill modules
+            container: [
                 [{ header: [1, 2, false] }],
                 ["bold", "italic", "underline", "strike", "blockquote"],
                 [
@@ -96,18 +129,16 @@ const TextEditor: React.FC<Props> = ({ routeName, value, onChange, placeholder, 
                     { indent: "-1" },
                     { indent: "+1" },
                 ],
-                ["link"],
-                // ["link", "image"], // Adding the 'image' option here
+                ["link", "image"], // Adding the 'image' option here
                 ["clean"],
             ],
-            handlers: { // <--- Must be nested inside toolbar
+            handlers: {
                 image: imageHandler,
             },
             clipboard: {
-                // toggle to add extra line breaks when pasting HTML:
                 matchVisual: false,
-            }
-        }
+            },
+        },
     };
 
     const formats = [
@@ -125,25 +156,23 @@ const TextEditor: React.FC<Props> = ({ routeName, value, onChange, placeholder, 
     ];
 
     const test = () => {
-        console.log(reactQuillRef?.getEditor());
-        console.log(reactQuillRef?.getEditorContents());
-    }
+        if (quillRef.current) {
+            console.log(quillRef.current.getEditor());
+            console.log(quillRef.current.getEditorContents());
+        }
+    };
 
     return (
-        <>
-            <ReactQuill
-                ref={(el) => {
-                    reactQuillRef = el;
-                }}
-                theme="snow"
-                value={value || ""}
-                modules={modules}
-                formats={formats}
-                onChange={test}
-                placeholder={placeholder}
-                className={className}
-            />
-        </>
+        <ReactQuill
+            ref={quillRef}
+            theme="snow"
+            value={value || ""}
+            modules={modules}
+            formats={formats}
+            onChange={test}
+            placeholder={placeholder}
+            className={className}
+        />
     );
 };
 
