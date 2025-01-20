@@ -1,10 +1,10 @@
 import { Button, Card, Form } from "antd";
 import { useEffect, useState } from "react";
-import TextEditor from '../../../shared/TextEditor';
-import "./AboutUsSettings.less";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
-import { useCookies } from "react-cookie";
+import TextEditorWithoutImage from "../../../shared/TextEditorWithoutImage";
+import "./AboutUsSettings.less";
 
 const AboutUsSettings = () => {
     const navigate = useNavigate();
@@ -14,6 +14,11 @@ const AboutUsSettings = () => {
     const [aboutUsRecords, setAboutUsRecords] = useState<any>();
     const [cookies, setCookie, removeCookie] = useCookies([aToken]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [editorValue1, setEditorValue1] = useState<any>();
+    const [editorValue2, setEditorValue2] = useState<any>();
+    const [editorValue3, setEditorValue3] = useState<any>();
+    const [editorValue4, setEditorValue4] = useState<any>();
+    const [editorValue5, setEditorValue5] = useState<any>();
 
     useEffect(() => {
         fetch(`${import.meta.env.VITE_API_KEY}/about-us`, {
@@ -24,35 +29,32 @@ const AboutUsSettings = () => {
             .then((response) => response.json())
             .then((data) => {
                 setAboutUsRecords(data);
-                form.setFieldsValue({
-                    'para1': data[0].content,
-                    'para2': data[1].content,
-                    'para3': data[2].content,
-                    'para4': data[3].content,
-                    'para5': data[4].content
-                })
+                setEditorValue1(data[0].content);
+                setEditorValue2(data[1].content);
+                setEditorValue3(data[2].content);
+                setEditorValue4(data[3].content);
+                setEditorValue5(data[4].content);
             }
             );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const submitForm = () => {
-        const formValue = form.getFieldsValue()
         const dataBody = [
             {
-                id: 1, content: formValue.para1
+                id: 1, content: editorValue1
             },
             {
-                id: 2, content: formValue.para2
+                id: 2, content: editorValue2
             },
             {
-                id: 3, content: formValue.para3
+                id: 3, content: editorValue3
             },
             {
-                id: 4, content: formValue.para4
+                id: 4, content: editorValue4
             },
             {
-                id: 5, content: formValue.para5
+                id: 5, content: editorValue5
             }
         ]
         fetch(`${import.meta.env.VITE_API_KEY}/update-about-us`, {
@@ -94,27 +96,27 @@ const AboutUsSettings = () => {
                                     <>
                                         <Card title="Paragraph 1" className='para-card'>
                                             <Form.Item name='para1'>
-                                                <TextEditor className={'para-editor'} />
+                                                <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue1} setEditorValue={setEditorValue1} />
                                             </Form.Item>
                                         </Card>
                                         <Card title="Paragraph 2" className='para-card'>
                                             <Form.Item name='para2'>
-                                                <TextEditor className={'para-editor'} />
+                                                <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue2} setEditorValue={setEditorValue2} />
                                             </Form.Item>
                                         </Card>
                                         <Card title="Paragraph 3" className='para-card'>
                                             <Form.Item name='para3'>
-                                                <TextEditor className={'para-editor'} />
+                                                <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue3} setEditorValue={setEditorValue3} />
                                             </Form.Item>
                                         </Card>
                                         <Card title="Paragraph 4" className='para-card'>
                                             <Form.Item name='para4'>
-                                                <TextEditor className={'para-editor'} />
+                                                <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue4} setEditorValue={setEditorValue4} />
                                             </Form.Item>
                                         </Card>
                                         <Card title="Paragraph 5" className='para-card'>
                                             <Form.Item name='para5'>
-                                                <TextEditor className={'para-editor'} />
+                                                <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue5} setEditorValue={setEditorValue5} />
                                             </Form.Item>
                                         </Card>
                                     </>

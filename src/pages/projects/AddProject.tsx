@@ -1,5 +1,5 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
@@ -12,6 +12,8 @@ const AddProject = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [projectType, setProjectType] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const [thumbNail, setThumbnail] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
@@ -68,7 +70,7 @@ const AddProject = () => {
         }
         const dataBody = {
             path: formValue.path,
-            content: formValue.content,
+            content: editorValue,
             description: formValue.description,
             title: formValue.title
         }
@@ -150,14 +152,24 @@ const AddProject = () => {
 
     const typeList = [
         {
+            key: 1,
             val: 'residentials',
             label: 'Residentials'
         },
         {
-            val: 'Commercials',
+            key: 2,
+            val: 'commercials',
             label: 'Commercials'
         }
     ]
+
+    const onChange = (key: string | string[]) => {
+        if(key === 'residentials'){
+            setProjectType('/upload-project-residentials-images');
+        } else if(key === 'commercials') {
+            setProjectType('/upload-project-commercials-images');
+        }
+    };
 
     const items: CollapseProps['items'] = [
         {
@@ -173,7 +185,7 @@ const AddProject = () => {
                     >
                         {
                             typeList && typeList.length > 0 ?
-                                getSelectFormItem('Project Type', 'projectType', 'Please select a Type.', false, typeList)
+                                getSelectFormItem('Project Type', 'projectType', 'Please select a Type.', false, typeList, false, '180px', onChange)
                                 :
                                 null
                         }
@@ -197,7 +209,7 @@ const AddProject = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} />
+                            <TextEditor className={'para-editor'} routeName={projectType} setEditorValue={setEditorValue} editorValue={editorValue} />
                         </Form.Item>
 
                         <br />
@@ -207,10 +219,6 @@ const AddProject = () => {
             </div>,
         },
     ];
-
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
 
     return (
         <>

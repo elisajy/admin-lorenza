@@ -104,6 +104,11 @@ const AboutUsSettings = ReactLazyPreload(
 );
 AboutUsSettings.preload();
 
+const AboutUsImage = ReactLazyPreload(
+  () => import("./pages/settings/AboutUsSettings/AboutUsImage")
+);
+AboutUsImage.preload();
+
 const HomeBanner = ReactLazyPreload(
   () => import("./pages/home/Banners/Banners")
 );
@@ -338,6 +343,12 @@ export const protectedRoutes: RouteInfo[] = [
     name: "About Us Settings",
     path: "/about-us-settings",
     component: AboutUsSettings,
+  },
+  {
+    id: "About Us Image",
+    name: "About Us Image",
+    path: "/about-us-image",
+    component: AboutUsImage,
   },
   {
     id: "Home Banner",

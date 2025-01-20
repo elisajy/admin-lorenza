@@ -15,6 +15,8 @@ const EditProject = () => {
     const [form] = Form.useForm();
     const [projectDetails, setProjectDetails] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
+    const [projectType, setProjectType] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const [thumbNail, setThumbnail] = useState<any>();
     const [segment, setSegment] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
@@ -39,7 +41,6 @@ const EditProject = () => {
                         title: data.title,
                         description: data.description,
                         path: data.path,
-                        content: data.content,
                         thumbnail: [
                             {
                                 uid: "-2",
@@ -49,6 +50,7 @@ const EditProject = () => {
                             },
                         ],
                     })
+                    setEditorValue(data.content);
                     setProjectDetails(data);
                 }
                 );
@@ -88,7 +90,7 @@ const EditProject = () => {
         const formValue = form.getFieldsValue();
         const dataBody = {
             path: formValue.path,
-            content: formValue.content ?? projectDetails.content,
+            content: editorValue,
             description: formValue.description,
             title: formValue.title
         }
@@ -188,7 +190,7 @@ const EditProject = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} />
+                            <TextEditor className={'para-editor'} routeName={`/upload-${segment}-images`} setEditorValue={setEditorValue} editorValue={editorValue} />
                         </Form.Item>
 
                         <br />

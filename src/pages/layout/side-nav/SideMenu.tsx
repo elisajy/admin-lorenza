@@ -98,10 +98,26 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
         {
             id: 7,
             name: 'About Us',
-            route: '/about-us-settings',
+            route: '/about-us',
             order: 1,
             icon: 'SettingOutlined',
             parentId: null
+        },
+        {
+            id: 71,
+            name: 'About Us Setting',
+            route: '/about-us-settings',
+            order: 1,
+            icon: 'HomeOutlined',
+            parentId: 7,
+        },
+        {
+            id: 72,
+            name: 'About Us Image',
+            route: '/about-us-image',
+            order: 1,
+            icon: 'HomeOutlined',
+            parentId: 7,
         },
         {
             id: 1,

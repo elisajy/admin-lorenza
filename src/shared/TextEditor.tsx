@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import ReactQuill, { Quill } from "react-quill-new";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import QuillResizeImage from 'quill-resize-image';
 
 type Props = {
     routeName: string;
@@ -9,6 +10,7 @@ type Props = {
     placeholder?: string;
     className?: string;
 };
+Quill.register("modules/resize", QuillResizeImage);
 
 const TextEditor: React.FC<Props> = ({
     routeName,
@@ -19,27 +21,6 @@ const TextEditor: React.FC<Props> = ({
 }) => {
     const quillRef = useRef<ReactQuill | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
-
-    // Debounce function
-    const debounce = (func: (...args: any[]) => void, wait: number) => {
-        let timeout: ReturnType<typeof setTimeout>;
-        return (...args: any[]) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), wait);
-        };
-    };
-
-    const debouncedSetEditorValue = useRef(
-        debounce((value: string) => {
-            setEditorValue(value);
-        }, 300)
-    );
-
-    const handleChange = (content: string, delta: any, source: string) => {
-        if (source === "user") {
-            debouncedSetEditorValue.current(content);
-        }
-    };
 
     // Preserve selection after state update
     useEffect(() => {
@@ -87,41 +68,40 @@ const TextEditor: React.FC<Props> = ({
         };
     };
 
-    const modules = {
-        toolbar: {
-            container: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-                ["link", "image"],
-                ["clean"],
-            ],
-            handlers: {
-                image: imageHandler,
+    const modules = useMemo(() => {
+        return {
+            toolbar: {
+                container: [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic", "underline", "strike", "blockquote"],
+                    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+                    ["link", "image"],
+                    ["clean"],
+                ],
+                handlers: {
+                    image: imageHandler,
+                },
             },
-        },
-    };
+            resize: {
+                locale: {},
+            },
+        }
+    }, []);
 
-    const formats = [
-        "header",
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        "blockquote",
-        "list",
-        "bullet",
-        "indent",
-        "link",
-        "image",
-    ];
+    const formats = useMemo(() => {
+        return [
+            'header',
+            'bold', 'italic', 'underline', 'strike', 'blockquote',
+            'list', 'ordered', 'indent',
+            'link', 'image'
+        ]
+    }, []);
 
     return (
         <ReactQuill
             ref={quillRef}
             theme="snow"
-            value={editorValue}
-            onChange={handleChange}
+            value={editorValue} onChange={setEditorValue}
             modules={modules}
             formats={formats}
             placeholder={placeholder}

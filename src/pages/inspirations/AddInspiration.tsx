@@ -41,20 +41,17 @@ const AddInspiration = () => {
     };
 
     const submitForm = () => {
-        console.log(editorValue);
         const formValue = form.getFieldsValue();
         if ((formValue.thumbnail === undefined) || (formValue.thumbnail && formValue.thumbnail.length === 0)) {
             return setErrorNotification('Please ensure that image is uploaded.');
         }
+
         const dataBody = {
             path: formValue.path,
-            content: formValue.content,
+            content: editorValue,
             description: formValue.description,
             title: formValue.title
         }
-
-        return console.log(dataBody);
-
         fetch(`${import.meta.env.VITE_API_KEY}/add-inspiration`, {
             method: 'POST',
             headers: {

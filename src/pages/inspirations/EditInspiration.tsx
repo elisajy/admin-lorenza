@@ -15,6 +15,7 @@ const EditInspiration = () => {
     const [inspirationDetails, setInspirationDetails] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [thumbNail, setThumbnail] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
@@ -28,7 +29,6 @@ const EditInspiration = () => {
                         title: data.title,
                         description: data.description,
                         path: data.path,
-                        content: data.content,
                         thumbnail: [
                             {
                                 uid: "-2",
@@ -38,6 +38,7 @@ const EditInspiration = () => {
                             },
                         ],
                     })
+                    setEditorValue(data.content);
                     setInspirationDetails(data);
                 }
                 );
@@ -72,7 +73,7 @@ const EditInspiration = () => {
         const formValue = form.getFieldsValue();
         const dataBody = {
             path: formValue.path,
-            content: formValue.content ?? inspirationDetails.content,
+            content: editorValue,
             description: formValue.description,
             title: formValue.title
         }
@@ -166,7 +167,7 @@ const EditInspiration = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} />
+                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
                         </Form.Item>
 
                         <br />
