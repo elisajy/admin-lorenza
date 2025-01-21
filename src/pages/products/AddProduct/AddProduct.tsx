@@ -76,7 +76,7 @@ const AddProduct = () => {
                         layout="vertical"
                         form={form}
                         className="form-box">
-                        {getUploadFormItem('image', 'Product Image', normPIFile, handlePreview, checkFileType, true)}
+                        {getUploadFormItem('images', 'Product Image', normPIFile, handlePreview, checkFileType, true)}
                     </Form>
                 </div>
             </div>,
@@ -211,6 +211,7 @@ const AddProduct = () => {
 
     const submitForm = () => {
         const formValue = form.getFieldsValue();
+        console.log(formValue);
         if ((formValue.images === undefined) || (formValue.images && formValue.images.length === 0)) {
             return setErrorNotification('Please ensure that image is uploaded.');
         }

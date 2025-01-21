@@ -14,7 +14,7 @@ interface Props {
 }
 
 const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableName, selectedTableName, setChildArray, childArray }: Props) => {
-    
+
     const tableName = [
         {
             id: 1,
@@ -55,7 +55,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
         setSelectedTableName(key);
         form.setFieldValue('menuName', null);
         if (key === 'categories') {
-            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
+            fetch(`${import.meta.env.VITE_API_KEY}/all-categories`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: any = [];
@@ -64,21 +64,8 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                             { val: x.name, label: x.name }
                         )
                     })
-                    setTableNameArr(array);
-                }
-                );
-
-            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: any = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    console.log(array);
                     setChildArray(array);
+                    setTableNameArr(array);
                 }
                 );
         } else if (key === 'sizes') {
@@ -92,6 +79,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                             { val: x.value, label: x.name, id: x.id }
                         )
                     })
+                    setChildArray(array);
                     setTableNameArr(array);
                 }
                 );
@@ -106,11 +94,12 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                             { val: x.name, label: x.name, id: x.id }
                         )
                     })
+                    setChildArray(array);
                     setTableNameArr(array);
                 }
                 );
         } else if (key === 'tags') {
-            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
+            fetch(`${import.meta.env.VITE_API_KEY}/all-tags`)
                 .then((response) => response.json())
                 .then((data) => {
                     let array: { val: any; label: any; }[] = [];
@@ -119,19 +108,8 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                             { val: x.name, label: x.name }
                         )
                     })
-                    setTableNameArr(array);
-                }
-                );
-            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: any = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
                     setChildArray(array);
+                    setTableNameArr(array);
                 }
                 );
         } else if (key === 'colors') {
@@ -145,6 +123,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                             { val: x.name, label: x.name }
                         )
                     })
+                    setChildArray(array);
                     setTableNameArr(array);
                 }
                 );
@@ -171,7 +150,7 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
                                     !['colors', 'sizes', 'finishes'].includes(selectedTableName) ?
                                         <>
                                             {
-                                                tableNameArr && tableNameArr.length > 0 &&
+                                                tableNameArr && (tableNameArr.length > 0 || tableNameArr.length === 0) &&
                                                 getSelectFormItem('Menu Name', 'menuName', 'Please select a name.', false, tableNameArr, true)
                                             }
                                         </>

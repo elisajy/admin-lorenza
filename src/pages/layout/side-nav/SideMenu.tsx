@@ -239,14 +239,14 @@ const SideMenu = ({ collapsed, toggleSideNav }: Props) => {
             icon: 'SettingOutlined',
             parentId: 3
         },
-        {
-            id: 32,
-            name: 'Menu Listing Settings',
-            route: '/menu-listing-settings',
-            order: 1,
-            icon: 'SettingOutlined',
-            parentId: 3
-        }
+        // {
+        //     id: 32,
+        //     name: 'Menu Listing Settings',
+        //     route: '/menu-listing-settings',
+        //     order: 1,
+        //     icon: 'SettingOutlined',
+        //     parentId: 3
+        // }
     ]
 
     useEffect(() => {
