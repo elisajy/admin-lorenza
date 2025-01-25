@@ -113,17 +113,18 @@ const EditProduct = () => {
                     data.images.map((url: any, index: any) => (
                         arrImages.push({
                             uid: `-${index + 1}`,
-                            name: `image_${index + 1}`,
+                            name: `image_${index + 1}_${Date.now()}`,
                             status: 'done',
                             url: url
                         })
                     ))
                 }
                 if (data.mockedImages.length !== 0) {
-                    data.mockedImages.map((url: any, index: any) => (
+                    data.mockedImages.map((url: any, index: any) =>
+                    (
                         arrMockedImages.push({
                             uid: `-${index + 1}`,
-                            name: `image_${index + 1}`,
+                            name: `image_${index + 1}_${Date.now()}`,
                             status: 'done',
                             url: url
                         })
@@ -284,15 +285,17 @@ const EditProduct = () => {
             .then(async (response) => {
                 if (response.status === 204) {
                     setSuccessNotification('Update Successful!');
-                    if (productImage !== undefined) {
-                        uploadProductImage(productImage);
-                    }
-                    if (mockedImage !== undefined) {
-                        uploadMockImage(mockedImage);
-                    }
-                    if ((mockedImage === undefined) && (productImage === undefined)) {
-                        navigate('/product-listing');
-                    }
+                    console.log('productImage', productImage);
+                    console.log('mockedImage', mockedImage);
+                    // if (productImage !== undefined) {
+                    //     uploadProductImage(productImage);
+                    // }
+                    // if (mockedImage !== undefined) {
+                    //     uploadMockImage(mockedImage);
+                    // }
+                    // if ((mockedImage === undefined) && (productImage === undefined)) {
+                    //     navigate('/product-listing');
+                    // }
                 }
             }
             )
