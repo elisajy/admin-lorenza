@@ -28,8 +28,12 @@ const CompanyInfo = () => {
                 return 'Address';
             case 'OPERATING_HOURS':
                 return 'Operating Hours';
-            case 'CONTACT_TEL':
-                return 'Contact Tel No.';
+            case 'CONTACT_MAIN':
+                return 'Main Branch No.';
+            case 'CONTACT_PENANG':
+                return 'Penang Branch No.';
+            case 'CONTACT_JOHOR':
+                return 'Johor Branch No.';
             case 'CONTACT_FAX':
                 return 'Contact Fax No.';
             case 'FACEBOOK':

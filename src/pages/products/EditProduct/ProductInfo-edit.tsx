@@ -1,6 +1,6 @@
 import { Form } from "antd";
 import { useEffect } from "react";
-import { getInputFormItem, getTagsFormItem, getTextAreaFormItem, getSelectFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getTagsFormItem, getTextAreaFormItem, getSelectFormItem, getInputNumberFormItem } from "../../utils/FormItems";
 import './EditProduct.less';
 
 interface Props {
@@ -24,7 +24,8 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
             prdColor: data?.color,
             prdVariation: data?.variation,
             prdTag: data?.tags,
-            prdCategory: data?.categories
+            prdCategory: data?.categories,
+            sequence: data?.sequence
         });
     }, [data]);
 
@@ -68,6 +69,7 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
                             tagsData && tagsData.length > 0 &&
                             getTagsFormItem('Product Tags', 'prdTag', 'Please select Tag.', false, tagsData)
                         }
+                        {getInputNumberFormItem('Sequence', "sequence", 'Please fill in sequence.')}
                     </Form>
                 </div>
             </div>

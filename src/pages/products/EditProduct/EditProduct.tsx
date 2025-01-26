@@ -320,6 +320,7 @@ const EditProduct = () => {
       categories: formValue.prdCategory,
       size: formValue.prdSize,
       finish: formValue.prdFinish,
+      sequence: formValue.sequence,
       notDeletedImageUrls: notDeletedImages,
     };
 

@@ -1,5 +1,5 @@
 import { Form } from "antd";
-import { getInputFormItem, getSelectFormItem, getTagsFormItem, getTextAreaFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getInputNumberFormItem, getSelectFormItem, getTagsFormItem, getTextAreaFormItem } from "../../utils/FormItems";
 
 interface Props {
     form: any;
@@ -51,6 +51,7 @@ const ProductInfoAdd = ({ form, categoryData, finishesData, sizesData, tagsData 
                             tagsData && tagsData.length > 0 &&
                             getTagsFormItem('Product Tags', 'prdTag', 'Please select Tag.', false, tagsData)
                         }
+                        {getInputNumberFormItem('Sequence', "sequence", 'Please fill in sequence.')}
                     </Form>
                 </div>
             </div>

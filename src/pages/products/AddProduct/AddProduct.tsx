@@ -266,6 +266,7 @@ const AddProduct = () => {
       categories: formValue.prdCategory,
       size: formValue.prdSize,
       finish: formValue.prdFinish,
+      sequence: formValue.sequence,
     };
     fetch(`${import.meta.env.VITE_API_KEY}/add-product`, {
       method: "POST",
