@@ -186,9 +186,12 @@ const AddProduct = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const uploadProductImage = async (file: File, responseId: any) => {
+  const uploadProductImage = async (arr: any, responseId: any) => {
     const formData = new FormData();
-    formData.append("image", file); // 'image' is the field name expected by the server
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index];
+      formData.append(`image-${index}`, element.originFileObj); // 'image' is the field name expected by the server
+    }
 
     fetch(
       `${import.meta.env.VITE_API_KEY}/upload-products-images/${responseId}`,
@@ -199,8 +202,14 @@ const AddProduct = () => {
     )
       .then(async (response) => {
         if (response.status === 201) {
-          setSuccessNotification("Upload Product Images Successful!");
-          navigate("/product-listing");
+          //mock images
+          const formValue = form.getFieldsValue();
+          if (formValue.mockedImages.length !== 0) {
+            await uploadMockImage(formValue.mockedImages, responseId);
+          } else {
+            setSuccessNotification("Upload Product Images Successful!");
+            navigate("/product-listing");
+          }
         }
       })
       .catch((error) => {
@@ -211,9 +220,12 @@ const AddProduct = () => {
       });
   };
 
-  const uploadMockImage = async (file: File, responseId: any) => {
+  const uploadMockImage = async (arr: any, responseId: any) => {
     const formData = new FormData();
-    formData.append("image", file); // 'image' is the field name expected by the server
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index];
+      formData.append(`image-${index}`, element.originFileObj); // 'image' is the field name expected by the server
+    }
 
     fetch(
       `${import.meta.env.VITE_API_KEY}/upload-mocked-images/${responseId}`,
@@ -238,12 +250,17 @@ const AddProduct = () => {
 
   const submitForm = () => {
     const formValue = form.getFieldsValue();
-    console.log(formValue);
     if (
       formValue.images === undefined ||
       (formValue.images && formValue.images.length === 0)
     ) {
       return setErrorNotification("Please ensure that image is uploaded.");
+    }
+
+    if (formValue.mockedImages.length > 3) {
+      return setErrorNotification(
+        "Mocked Images only allow to upload 3(three) images."
+      );
     }
 
     const dataBody = {
@@ -270,9 +287,8 @@ const AddProduct = () => {
         if (response.status === 201) {
           setSuccessNotification("Insert Successful!");
           const data = await response.json();
-          console.log(data);
-          uploadProductImage(productImage, data.id);
-          uploadMockImage(mockedImage, data.id);
+          uploadProductImage(formValue.images, data.id);
+          // uploadMockImage(formValue.mockedImages, data.id);
         }
 
         if (response.status === 409) {
