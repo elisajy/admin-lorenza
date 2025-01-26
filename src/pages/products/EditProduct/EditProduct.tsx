@@ -269,6 +269,26 @@ const EditProduct = () => {
 
   const submitForm = () => {
     const formValue = form.getFieldsValue();
+    if (
+      formValue.images === undefined ||
+      (formValue.images && formValue.images.length === 0)
+    ) {
+      return setErrorNotification("Please ensure that image is uploaded.");
+    }
+
+    if (
+      formValue.mockedImages === undefined ||
+      (formValue.mockedImages && formValue.mockedImages.length === 0)
+    ) {
+      return setErrorNotification(
+        "Please ensure that Mocked Image is uploaded."
+      );
+    }
+    if (formValue.mockedImages.length > 3) {
+      return setErrorNotification(
+        "Mocked Images only allow to upload 3(three) images."
+      );
+    }
 
     let notDeletedImages: any = [];
     let uploadPrdImages: any = [];
@@ -287,21 +307,6 @@ const EditProduct = () => {
       } else {
         uploadMockImages.push(item);
       }
-    }
-    if (
-      formValue.images === undefined ||
-      (formValue.images && formValue.images.length === 0)
-    ) {
-      return setErrorNotification("Please ensure that image is uploaded.");
-    }
-
-    if (
-      formValue.mockedImages === undefined ||
-      (formValue.mockedImages && formValue.mockedImages.length === 0)
-    ) {
-      return setErrorNotification(
-        "Please ensure that Mocked Image is uploaded."
-      );
     }
 
     const dataBody = {
