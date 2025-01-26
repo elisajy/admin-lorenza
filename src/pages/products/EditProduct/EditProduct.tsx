@@ -219,52 +219,55 @@ const EditProduct = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const uploadProductImage = async (arr: any) => {
-    for (const item of arr) {
-      const formData = new FormData();
-      formData.append("image", item.originFileObj); // 'image' is the field name expected by the server
-
-      fetch(`${import.meta.env.VITE_API_KEY}/upload-products-images/${id}`, {
-        method: "POST",
-        body: formData, // Sending the image data
-      })
-        .then(async (response) => {
-          if (response.status === 201) {
-            setSuccessNotification("Upload Product Images Successful!");
-            navigate("/product-listing");
-          }
-        })
-        .catch((error) => {
-          console.log("Upload Product Images error:", error);
-          setErrorNotification(
-            "Upload Product Images Failed. Please try again later."
-          );
-        });
+  const uploadProductImage = async (arr: any, mockedArr: any) => {
+    const formData = new FormData();
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index];
+      formData.append(`image-${index}`, element.originFileObj); // 'image' is the field name expected by the server
     }
+
+    fetch(`${import.meta.env.VITE_API_KEY}/upload-products-images/${id}`, {
+      method: "POST",
+      body: formData, // Sending the image data
+    })
+      .then(async (response) => {
+        if (response.status === 201) {
+          if (mockedArr.length !== 0) {
+            await uploadMockImage(mockedArr);
+          }
+          setSuccessNotification("Upload Product Images Successful!");
+        }
+      })
+      .catch((error) => {
+        console.log("Upload Product Images error:", error);
+        setErrorNotification(
+          "Upload Product Images Failed. Please try again later."
+        );
+      });
   };
 
   const uploadMockImage = async (arr: any) => {
-    for (const item of arr) {
-      const formData = new FormData();
-      formData.append("image", item.originFileObj); // 'image' is the field name expected by the server
-
-      fetch(`${import.meta.env.VITE_API_KEY}/upload-mocked-images/${id}`, {
-        method: "POST",
-        body: formData, // Sending the image data
-      })
-        .then(async (response) => {
-          if (response.status === 201) {
-            setSuccessNotification("Upload Mocked Images Successful!");
-            navigate("/product-listing");
-          }
-        })
-        .catch((error) => {
-          console.log("Upload Mocked Images error:", error);
-          setErrorNotification(
-            "Upload Mocked Images Failed. Please try again later."
-          );
-        });
+    const formData = new FormData();
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index];
+      formData.append(`image-${index}`, element.originFileObj); // 'image' is the field name expected by the server
     }
+
+    fetch(`${import.meta.env.VITE_API_KEY}/upload-mocked-images/${id}`, {
+      method: "POST",
+      body: formData, // Sending the image data
+    })
+      .then(async (response) => {
+        if (response.status === 201) {
+          setSuccessNotification("Upload Mocked Images Successful!");
+        }
+      })
+      .catch((error) => {
+        console.log("Upload Mocked Images error:", error);
+        setErrorNotification(
+          "Upload Mocked Images Failed. Please try again later."
+        );
+      });
   };
 
   const submitForm = () => {
@@ -276,14 +279,6 @@ const EditProduct = () => {
       return setErrorNotification("Please ensure that image is uploaded.");
     }
 
-    if (
-      formValue.mockedImages === undefined ||
-      (formValue.mockedImages && formValue.mockedImages.length === 0)
-    ) {
-      return setErrorNotification(
-        "Please ensure that Mocked Image is uploaded."
-      );
-    }
     if (formValue.mockedImages.length > 3) {
       return setErrorNotification(
         "Mocked Images only allow to upload 3(three) images."
@@ -338,14 +333,9 @@ const EditProduct = () => {
         if (response.status === 204) {
           setSuccessNotification("Update Successful!");
           if (uploadPrdImages.length !== 0) {
-            uploadProductImage(uploadPrdImages);
+            await uploadProductImage(uploadPrdImages, uploadMockImages);
           }
-          if (uploadMockImages.length !== 0) {
-            uploadMockImage(uploadMockImages);
-          }
-          if (uploadPrdImages.length === 0 && uploadMockImages.length === 0) {
-            navigate("/product-listing");
-          }
+          navigate("/product-listing");
         }
       })
       .catch((error) => {

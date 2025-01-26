@@ -246,15 +246,6 @@ const AddProduct = () => {
       return setErrorNotification("Please ensure that image is uploaded.");
     }
 
-    if (
-      formValue.mockedImages === undefined ||
-      (formValue.mockedImages && formValue.mockedImages.length === 0)
-    ) {
-      return setErrorNotification(
-        "Please ensure that Mocked Image is uploaded."
-      );
-    }
-
     const dataBody = {
       name: formValue.prdName,
       code: formValue.prdCode,
