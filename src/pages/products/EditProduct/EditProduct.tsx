@@ -362,7 +362,8 @@ const EditProduct = () => {
       <Collapse
         style={{ textAlign: "left" }}
         items={items}
-        defaultActiveKey={["1"]}
+        defaultActiveKey={["1", "2", "3"]}
+        // activeKey={["1", "2", "3"]}
         onChange={onChange}
       />
       ;

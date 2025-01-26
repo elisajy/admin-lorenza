@@ -132,7 +132,7 @@ const EditMenu = () => {
                 <h2>{pageTitle}</h2>
                 <br />
             </div>
-            <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={['1']} onChange={onChange} />;
+            <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={["1", "2"]} onChange={onChange} />;
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
                 <Button className='form-button' onClick={() => navigate('/menu-settings')}>Cancel</Button>
