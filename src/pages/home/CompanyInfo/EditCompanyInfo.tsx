@@ -5,6 +5,7 @@ import { Button, Card, Form, Upload } from "antd";
 import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../../utils/FormItems";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
 import PreviewImage from "../../../shared/PreviewImage";
+import TextEditorWithoutImage from "../../../shared/TextEditorWithoutImage";
 
 const EditCompanyInfo = () => {
     const pageTitle = 'Edit Company Info'
@@ -16,6 +17,9 @@ const EditCompanyInfo = () => {
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
+    
+    const [editorValue, setEditorValue] = useState<any>();
+
     const getKeyName = (key: string) => {
         switch (key) {
             case 'COMPANY_NAME':
@@ -26,14 +30,10 @@ const EditCompanyInfo = () => {
                 return 'Address';
             case 'OPERATING_HOURS':
                 return 'Operating Hours';
-            case 'CONTACT_MAIN':
-                return 'Main Branch No.';
-            case 'CONTACT_PENANG':
-                return 'Penang Branch No.';
-            case 'CONTACT_JOHOR':
-                return 'Johor Branch No.';
-            case 'CONTACT_FAX':
-                return 'Contact Fax No.';
+            case 'CONTACT_DESKTOP':
+                return 'Contact Desktop View';
+            case 'CONTACT_MOBILE':
+                return 'Contact Mobile View';
             case 'FACEBOOK':
                 return 'Facebook Link';
             case 'INSTAGRAM':
@@ -62,7 +62,8 @@ const EditCompanyInfo = () => {
                                 name: `img_${data.key}`,
                             },
                         ],
-                    })
+                    });
+                    setEditorValue(data.value);
                 }
                 );
         } catch (error) {
@@ -73,7 +74,7 @@ const EditCompanyInfo = () => {
     const submitForm = () => {
         const formValue = form.getFieldsValue();
         const dataBody = {
-            value: formValue.value
+            value: formValue.title.toUpperCase().includes("CONTACT") ? editorValue : formValue.value
         }
         fetch(`${import.meta.env.VITE_API_KEY}/update-company-info`, {
             method: 'POST',
@@ -188,14 +189,26 @@ const EditCompanyInfo = () => {
                                     }
                                 </>
                                 :
-                                <Form
-                                    layout='vertical'
-                                    form={form}
-                                    className="form-box"
-                                >
-                                    {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
-                                    {getInputFormItem('Value', "value", 'Please fill in the value.')}
-                                </Form>
+                                key?.includes('CONTACT') ?
+                                    <Form
+                                        layout='vertical'
+                                        form={form}
+                                        className="form-box"
+                                    >
+                                        {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
+                                        <Form.Item name='value'>
+                                            <TextEditorWithoutImage className={'para-editor-small'} editorValue={editorValue} setEditorValue={setEditorValue} />
+                                        </Form.Item>
+                                    </Form>
+                                    :
+                                    <Form
+                                        layout='vertical'
+                                        form={form}
+                                        className="form-box"
+                                    >
+                                        {getInputFormItem('Title', "title", 'Please fill in the title.', '', true)}
+                                        {getInputFormItem('Value', "value", 'Please fill in the value.')}
+                                    </Form>
                         }
                     </div>
                 </div>
