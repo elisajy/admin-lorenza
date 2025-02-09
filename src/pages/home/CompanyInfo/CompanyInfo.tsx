@@ -1,4 +1,4 @@
-import { Button, Space, Table } from "antd";
+import { Space, Table } from "antd";
 import Column from "antd/es/table/Column";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,14 +28,10 @@ const CompanyInfo = () => {
                 return 'Address';
             case 'OPERATING_HOURS':
                 return 'Operating Hours';
-            case 'CONTACT_MAIN':
-                return 'Main Branch No.';
-            case 'CONTACT_PENANG':
-                return 'Penang Branch No.';
-            case 'CONTACT_JOHOR':
-                return 'Johor Branch No.';
-            case 'CONTACT_FAX':
-                return 'Contact Fax No.';
+            case 'CONTACT_DESKTOP':
+                return 'Contact Desktop View';
+            case 'CONTACT_MOBILE':
+                return 'Contact Mobile View';
             case 'FACEBOOK':
                 return 'Facebook Link';
             case 'INSTAGRAM':
