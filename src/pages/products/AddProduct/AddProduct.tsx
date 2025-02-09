@@ -1,18 +1,11 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import {
-  categoryData,
-  colorData,
-  finishesData,
-  sizesData,
-  tagsData,
-} from "../dummyProduct";
-import ProductInfoAdd from "./ProductInfo-add";
-import useNotification from "../../../hooks/layout/useNotification";
 import { useEffect, useState } from "react";
-import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
-import { getUploadFormItem } from "../../utils/FormItems";
-import PreviewImage from "../../../shared/PreviewImage";
 import { useNavigate } from "react-router-dom";
+import useNotification from "../../../hooks/layout/useNotification";
+import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
+import PreviewImage from "../../../shared/PreviewImage";
+import { getUploadFormItem } from "../../utils/FormItems";
+import ProductInfoAdd from "./ProductInfo-add";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -22,6 +15,7 @@ const AddProduct = () => {
   const [prdTags, setPrdTags] = useState<any>();
   const [prdSizes, setPrdSizes] = useState<any>();
   const [prdFinishes, setPrdFinishes] = useState<any>();
+  const [prdColors, setPrdColors] = useState<any>();
   const { setSuccessNotification, setErrorNotification } = useNotification();
   const [productImage, setProductImage] = useState<any>();
   const [mockedImage, setMockedImage] = useState<any>();
@@ -85,6 +79,7 @@ const AddProduct = () => {
           tagsData={prdTags}
           sizesData={prdSizes}
           finishesData={prdFinishes}
+          colorsData={prdColors}
         />
       ),
     },
@@ -186,6 +181,19 @@ const AddProduct = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_KEY}/all-colors`)
+      .then((response) => response.json())
+      .then((data) => {
+        let array: { val: any; label: any; id: any }[] = [];
+        data.map((x: any) => {
+          array.push({ val: x.id, label: x.name, id: x.id });
+        });
+        setPrdColors(array);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const uploadProductImage = async (arr: any, responseId: any) => {
     const formData = new FormData();
     for (let index = 0; index < arr.length; index++) {
@@ -204,7 +212,7 @@ const AddProduct = () => {
         if (response.status === 201) {
           //mock images
           const formValue = form.getFieldsValue();
-          if (formValue.mockedImages.length !== 0) {
+          if (formValue.mockedImages && formValue.mockedImages.length !== 0) {
             await uploadMockImage(formValue.mockedImages, responseId);
           } else {
             setSuccessNotification("Upload Product Images Successful!");
@@ -257,7 +265,7 @@ const AddProduct = () => {
       return setErrorNotification("Please ensure that image is uploaded.");
     }
 
-    if (formValue.mockedImages.length > 3) {
+    if (formValue.mockedImages && formValue.mockedImages.length > 3) {
       return setErrorNotification(
         "Mocked Images only allow to upload 3(three) images."
       );
@@ -275,6 +283,7 @@ const AddProduct = () => {
       size: formValue.prdSize,
       finish: formValue.prdFinish,
       sequence: formValue.sequence,
+      colorId: formValue.prdColorId,
     };
     fetch(`${import.meta.env.VITE_API_KEY}/add-product`, {
       method: "POST",

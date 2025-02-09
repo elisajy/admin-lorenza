@@ -17,6 +17,7 @@ const EditProduct = () => {
   const [prdTags, setPrdTags] = useState<any>();
   const [prdSizes, setPrdSizes] = useState<any>();
   const [prdFinishes, setPrdFinishes] = useState<any>();
+  const [prdColors, setPrdColors] = useState<any>();
   const { setSuccessNotification, setErrorNotification } = useNotification();
   const [productImage, setProductImage] = useState<any>();
   const [mockedImage, setMockedImage] = useState<any>();
@@ -82,6 +83,7 @@ const EditProduct = () => {
           tagsData={prdTags}
           sizesData={prdSizes}
           finishesData={prdFinishes}
+          colorsData={prdColors}
         />
       ),
     },
@@ -219,6 +221,20 @@ const EditProduct = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_KEY}/all-colors`)
+      .then((response) => response.json())
+      .then((data) => {
+        let array: { val: any; label: any; id: any }[] = [];
+        data.map((x: any) => {
+          array.push({ val: x.id, label: x.name, id: x.id });
+        });
+        setPrdColors(array);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   const uploadProductImage = async (arr: any, mockedArr: any) => {
     const formData = new FormData();
     for (let index = 0; index < arr.length; index++) {
@@ -231,8 +247,10 @@ const EditProduct = () => {
       body: formData, // Sending the image data
     })
       .then(async (response) => {
+        console.log('response', response.status);
+        console.log('mockedArr', mockedArr);
         if (response.status === 201) {
-          if (mockedArr.length !== 0) {
+          if (mockedArr && mockedArr.length !== 0) {
             await uploadMockImage(mockedArr);
           }
           setSuccessNotification("Upload Product Images Successful!");
@@ -279,7 +297,7 @@ const EditProduct = () => {
       return setErrorNotification("Please ensure that image is uploaded.");
     }
 
-    if (formValue.mockedImages.length > 3) {
+    if (formValue.mockedImages && formValue.mockedImages.length > 3) {
       return setErrorNotification(
         "Mocked Images only allow to upload 3(three) images."
       );
@@ -316,6 +334,7 @@ const EditProduct = () => {
       size: formValue.prdSize,
       finish: formValue.prdFinish,
       sequence: formValue.sequence,
+      colorId: formValue.prdColorId,
       notDeletedImageUrls: notDeletedImages,
     };
 
@@ -334,6 +353,8 @@ const EditProduct = () => {
           setSuccessNotification("Update Successful!");
           if (uploadPrdImages.length !== 0) {
             await uploadProductImage(uploadPrdImages, uploadMockImages);
+          } else if (uploadPrdImages.length === 0 && uploadMockImages.length !== 0) {
+            await uploadMockImage(uploadMockImages);
           }
           navigate("/product-listing");
         }

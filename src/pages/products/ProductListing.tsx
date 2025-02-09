@@ -1,10 +1,12 @@
-import { Button, Space, Table, Tag } from 'antd';
+import { Button, Input, InputRef, Space, Table, TableColumnsType, TableColumnType, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
-import { TableRowSelection } from 'antd/es/table/interface';
-import React, { useEffect, useState } from 'react';
+import { FilterDropdownProps, TableRowSelection } from 'antd/es/table/interface';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationDialog from '../../shared/ConfirmationDialog';
 import useNotification from '../../hooks/layout/useNotification';
+import { SearchOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
 
 const ProductListing = () => {
     const navigate = useNavigate();
@@ -13,6 +15,11 @@ const ProductListing = () => {
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [refreshKey, setRefreshKey] = useState(0);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef<InputRef>(null);
+
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
@@ -84,6 +91,184 @@ const ProductListing = () => {
         })
     };
 
+    interface DataType {
+        sequence: string;
+        category: string;
+        name: string;
+        code: string;
+        tagList: any;
+        updatedAt: any;
+        action: any;
+    }
+
+    type DataIndex = keyof DataType;
+
+    const handleSearch = (
+        selectedKeys: string[],
+        confirm: FilterDropdownProps['confirm'],
+        dataIndex: DataIndex,
+    ) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+
+    const handleReset = (clearFilters: () => void, confirm: FilterDropdownProps['confirm'],
+    ) => {
+        clearFilters();
+        setSearchText('');
+        confirm();
+    };
+
+    const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType> => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters, confirm)}
+                        size="small"
+                        style={{ width: 60 }}
+                    >
+                        Reset
+                    </Button>
+                    {/* <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            confirm({ closeDropdown: false });
+                            setSearchText((selectedKeys as string[])[0]);
+                            setSearchedColumn(dataIndex);
+                        }}
+                    >
+                        Filter
+                    </Button> */}
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        Close
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered: boolean) => (
+            <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes((value as string).toLowerCase()),
+        filterDropdownProps: {
+            onOpenChange(open) {
+                if (open) {
+                    setTimeout(() => searchInput.current?.select(), 100);
+                }
+            },
+        },
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+
+    const columns: TableColumnsType<DataType> = [
+        {
+            title: 'Sequence',
+            dataIndex: 'sequence',
+            key: 'sequence',
+            //   width: '30%',
+            ...getColumnSearchProps('sequence'),
+        },
+        {
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
+            //   width: '20%',
+            ...getColumnSearchProps('category'),
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+            ...getColumnSearchProps('name'),
+            // sorter: (a, b) => a.name.length - b.name.length,
+            // sortDirections: ['descend', 'ascend'],
+        },
+        {
+            title: 'Code',
+            dataIndex: 'code',
+            key: 'code',
+            //   width: '20%',
+            ...getColumnSearchProps('code'),
+        },
+        {
+            title: 'Tags',
+            dataIndex: "tagList",
+            key: "tagList",
+            width: 250,
+            render: (tagList: string[]) => (
+                <>
+                    {tagList.map((tag) => {
+                        let color = tag.length > 5 ? "geekblue" : "green";
+                        if (tag === "loser") {
+                            color = "volcano";
+                        }
+                        return (
+                            <Tag color={color} key={tag}>
+                                {tag.toUpperCase()}
+                            </Tag>
+                        );
+                    })}
+                </>
+            ),
+        },
+        {
+            title: 'Updated At',
+            dataIndex: 'updatedAt',
+            key: 'updatedAt',
+            //   width: '20%',
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+            render: (_: any, record: DataType) => (
+                <Space size="middle">
+                    <a onClick={() => navAction("edit", record)}>Edit</a>
+                    <a onClick={() => deletion(record)}>Delete</a>
+                </Space>
+            ),
+        }
+    ];
+
     return (
         <>
             <div className='form-button-container'>
@@ -100,10 +285,11 @@ const ProductListing = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={productListing}
+                {/* <Table dataSource={productListing}
                     rowSelection={rowSelection}
                     rowKey='id'
                 >
+                    <Column title="Sequence" dataIndex="sequence" key="sequence" />
                     <Column title="Category" dataIndex="category" key="category" />
                     <Column title="Name" dataIndex="name" key="name" />
                     <Column title="Code" dataIndex="code" key="code" />
@@ -140,7 +326,8 @@ const ProductListing = () => {
                             </Space>
                         )}
                     />
-                </Table>
+                </Table> */}
+                <Table<DataType> columns={columns} dataSource={productListing} />;
 
             </div>
         </>

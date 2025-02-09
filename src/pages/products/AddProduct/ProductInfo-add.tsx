@@ -7,9 +7,10 @@ interface Props {
     tagsData: any;
     sizesData: any;
     finishesData: any;
+    colorsData: any;
 }
 
-const ProductInfoAdd = ({ form, categoryData, finishesData, sizesData, tagsData }: Props) => {
+const ProductInfoAdd = ({ form, categoryData, finishesData, sizesData, tagsData, colorsData }: Props) => {
 
     return (
         <>
@@ -45,6 +46,10 @@ const ProductInfoAdd = ({ form, categoryData, finishesData, sizesData, tagsData 
                         {
                             finishesData && finishesData.length > 0 &&
                             getSelectFormItem('Product Finishes', 'prdFinish', 'Please select a Product Finishes.', false, finishesData)
+                        }
+                        {
+                            colorsData && colorsData.length > 0 &&
+                            getSelectFormItem('Color Category', 'prdColorId', 'Please select a Product Color Category.', false, colorsData)
                         }
                         {getInputFormItem('Product Color', "prdColor", 'Please fill in the Product Color.')}
                         {

@@ -10,9 +10,10 @@ interface Props {
     tagsData: any;
     sizesData: any;
     finishesData: any;
+    colorsData: any;
 }
 
-const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finishesData }: Props) => {
+const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finishesData, colorsData }: Props) => {
     useEffect(() => {
         form.setFieldsValue({
             prdName: data?.name,
@@ -22,6 +23,7 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
             prdThickness: data?.thickness,
             prdSize: data?.size,
             prdColor: data?.color,
+            prdColorId: data?.colorId,
             prdVariation: data?.variation,
             prdTag: data?.tags,
             prdCategory: data?.categories,
@@ -63,6 +65,10 @@ const ProductInfoEdit = ({ form, data, categoryData, tagsData, sizesData, finish
                         {
                             finishesData && finishesData.length > 0 &&
                             getSelectFormItem('Product Finishes', 'prdFinish', 'Please select a Product Finishes.', false, finishesData)
+                        }
+                        {
+                            colorsData && colorsData.length > 0 &&
+                            getSelectFormItem('Color Category', 'prdColorId', 'Please select a Product Color Category.', true, colorsData)
                         }
                         {getInputFormItem('Product Color', "prdColor", 'Please fill in the Product Color.', '', true)}
                         {
