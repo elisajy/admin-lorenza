@@ -84,7 +84,7 @@ const AddFAQ = () => {
             </Card>
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
-                <Button className='form-button' onClick={() => navigate('/faq-settings')}>Cancel</Button>
+                <Button className='form-button' onClick={() => navigate(-1)}>Cancel</Button>
             </div>
         </>
     )

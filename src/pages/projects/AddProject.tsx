@@ -229,7 +229,7 @@ const AddProject = () => {
             <Collapse style={{ textAlign: 'left' }} items={items} defaultActiveKey={["1", "2"]} onChange={onChange} />;
             <div className="form-action-button-container">
                 <Button type="primary" className='form-button' onClick={submitForm}>Save</Button>
-                <Button className='form-button' onClick={() => navigate('/project-settings')}>Cancel</Button>
+                <Button className='form-button' onClick={() => navigate(-1)}>Cancel</Button>
             </div>
             <PreviewImage displayImg={displayImg} setDisplayImg={setDisplayImg} />
         </>
