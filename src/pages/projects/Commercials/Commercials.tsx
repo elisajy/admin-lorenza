@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import { Space, Table } from "antd";
 import Column from "antd/es/table/Column";
@@ -12,6 +12,18 @@ const Commercials = () => {
     const [commercials, setCommercials] = useState<any>([]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [refreshKey, setRefreshKey] = useState(0);
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = Number(searchParams.get("page")) || 1;
+    const [pagination, setPagination] = useState({ current: page, pageSize: 10 });
+    const handleTableChange = (pagination: any) => {
+        setPagination(pagination);
+        navigate(`?page=${pagination.current}`); // Update URL
+    };
+
+    useEffect(() => {
+        setPagination((prev) => ({ ...prev, current: page }));
+    }, [page]);
 
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
@@ -88,7 +100,8 @@ const Commercials = () => {
 
     return (
         <>
-            <Table dataSource={commercials}
+            <Table dataSource={commercials} pagination={pagination}
+                    onChange={handleTableChange}
                 rowKey='id'
             >
                 <Column title="Title" dataIndex="title" key="name" />

@@ -1,12 +1,23 @@
 import { Space, Table } from "antd";
 import Column from "antd/es/table/Column";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CompanyInfo = () => {
     const navigate = useNavigate();
     const [companyInfo, setCompanyInfo] = useState<any>();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = Number(searchParams.get("page")) || 1;
+    const [pagination, setPagination] = useState({ current: page, pageSize: 10 });
+    const handleTableChange = (pagination: any) => {
+        setPagination(pagination);
+        navigate(`?page=${pagination.current}`); // Update URL
+    };
 
+    useEffect(() => {
+        setPagination((prev) => ({ ...prev, current: page }));
+    }, [page]);
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/company-info/edit/${record.key}`)
@@ -78,7 +89,8 @@ const CompanyInfo = () => {
                 </div>
             </div>
             <div>
-                <Table dataSource={companyInfo}>
+                <Table dataSource={companyInfo} pagination={pagination}
+                    onChange={handleTableChange} > 
                     <Column title="Title" dataIndex="title" key="name" />
                     <Column title="Value" dataIndex="value" key="value" />
                     <Column title="Updated At" dataIndex="updatedAt" key="updatedAt" />

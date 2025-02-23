@@ -2,7 +2,7 @@ import { Button, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
 import { TableRowSelection } from "antd/es/table/interface";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import ConfirmationDialog from "../../shared/ConfirmationDialog";
 
@@ -14,7 +14,18 @@ const ProductTags = () => {
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
     const [refreshKey, setRefreshKey] = useState(0);
     const { setSuccessNotification, setErrorNotification } = useNotification();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = Number(searchParams.get("page")) || 1;
+    const [pagination, setPagination] = useState({ current: page, pageSize: 10 });
+    const handleTableChange = (pagination: any) => {
+        setPagination(pagination);
+        navigate(`?page=${pagination.current}`); // Update URL
+    };
 
+    useEffect(() => {
+        setPagination((prev) => ({ ...prev, current: page }));
+    }, [page]);
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/product-tags/edit/${record.key}`)
@@ -103,7 +114,8 @@ const ProductTags = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={productTags}
+                <Table dataSource={productTags} pagination={pagination}
+                    onChange={handleTableChange}
                     rowKey='id'
                 >
                     <Column title="Name" dataIndex="name" key="tagName" />

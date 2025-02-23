@@ -1,7 +1,7 @@
 import { Button, Space, Table } from "antd";
 import Column from "antd/es/table/Column";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import ConfirmationDialog from "../../shared/ConfirmationDialog";
 
@@ -12,7 +12,19 @@ const Inspiration = () => {
     const [inspirationList, setInspirationList] = useState<any>([]);
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [refreshKey, setRefreshKey] = useState(0);
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = Number(searchParams.get("page")) || 1;
+    const [pagination, setPagination] = useState({ current: page, pageSize: 10 });
 
+    const handleTableChange = (pagination: any) => {
+        setPagination(pagination);
+        navigate(`?page=${pagination.current}`); // Update URL
+    };
+
+    useEffect(() => {
+        setPagination((prev) => ({ ...prev, current: page }));
+    }, [page]);
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/inspiration-settings/edit/${record.key}`)
@@ -101,7 +113,8 @@ const Inspiration = () => {
                 setShowModal={setShowModal}
                 action={confirmation.action} actionText={confirmation.buttonText} />
             <div>
-                <Table dataSource={inspirationList}
+                <Table dataSource={inspirationList} pagination={pagination}
+                    onChange={handleTableChange}
                     rowKey='id'
                 >
                     <Column title="Title" dataIndex="title" key="name" />

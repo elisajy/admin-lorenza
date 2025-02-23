@@ -26,12 +26,12 @@ const ProductListing = () => {
     const handleTableChange = (pagination: any) => {
         setPagination(pagination);
         navigate(`?page=${pagination.current}`); // Update URL
-      };
-    
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         setPagination((prev) => ({ ...prev, current: page }));
-      }, [page]);
-    
+    }, [page]);
+
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/product-listing/edit/${record.key}`)
@@ -343,8 +343,8 @@ const ProductListing = () => {
                         )}
                     />
                 </Table> */}
-                <Table<DataType> columns={columns} dataSource={productListing}  pagination={pagination}
-      onChange={handleTableChange}/>;
+                <Table<DataType> columns={columns} dataSource={productListing} pagination={pagination}
+                    onChange={handleTableChange} />;
 
             </div>
         </>
