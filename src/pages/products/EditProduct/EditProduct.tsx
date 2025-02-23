@@ -385,7 +385,7 @@ const EditProduct = () => {
         </Button>
         <Button
           className="form-button"
-          onClick={() => navigate("/product-listing")}
+          onClick={() => navigate(-1)}
         >
           Cancel
         </Button>

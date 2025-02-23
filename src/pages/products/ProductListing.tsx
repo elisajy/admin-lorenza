@@ -2,7 +2,7 @@ import { Button, Input, InputRef, Space, Table, TableColumnsType, TableColumnTyp
 import Column from 'antd/es/table/Column';
 import { FilterDropdownProps, TableRowSelection } from 'antd/es/table/interface';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ConfirmationDialog from '../../shared/ConfirmationDialog';
 import useNotification from '../../hooks/layout/useNotification';
 import { SearchOutlined } from '@ant-design/icons';
@@ -18,8 +18,20 @@ const ProductListing = () => {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef<InputRef>(null);
-
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const page = Number(searchParams.get("page")) || 1;
+    const [pagination, setPagination] = useState({ current: page, pageSize: 10 });
     const [confirmation, setConfirmation] = useState({ title: '', message: '', buttonText: '', action: () => { } });
+    const handleTableChange = (pagination: any) => {
+        setPagination(pagination);
+        navigate(`?page=${pagination.current}`); // Update URL
+      };
+    
+      useEffect(() => {
+        setPagination((prev) => ({ ...prev, current: page }));
+      }, [page]);
+    
     const navAction = (type: any, record?: any) => {
         if (type === 'edit') {
             navigate(`/product-listing/edit/${record.key}`)
@@ -331,7 +343,8 @@ const ProductListing = () => {
                         )}
                     />
                 </Table> */}
-                <Table<DataType> columns={columns} dataSource={productListing} />;
+                <Table<DataType> columns={columns} dataSource={productListing}  pagination={pagination}
+      onChange={handleTableChange}/>;
 
             </div>
         </>
