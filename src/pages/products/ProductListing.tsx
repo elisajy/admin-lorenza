@@ -15,7 +15,6 @@ const ProductListing = () => {
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [refreshKey, setRefreshKey] = useState(0);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef<InputRef>(null);
@@ -120,6 +119,19 @@ const ProductListing = () => {
         confirm();
     };
 
+    const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+        const pastedValue = event.clipboardData.getData("text");
+        setSearchText(pastedValue);
+        console.log(pastedValue);
+        // This ensures the table updates when the user pastes
+        setTimeout(() => {
+            if (searchInput.current) {
+                searchInput.current.input?.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+        }, 0);
+    };
+
+
     const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType> => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -127,6 +139,7 @@ const ProductListing = () => {
                     ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
                     value={selectedKeys[0]}
+                    onPaste={handlePaste}
                     onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
                     style={{ marginBottom: 8, display: 'block' }}
@@ -138,6 +151,7 @@ const ProductListing = () => {
                         icon={<SearchOutlined />}
                         size="small"
                         style={{ width: 90 }}
+                        onChange={() => console.log(selectedKeys, dataIndex)}
                     >
                         Search
                     </Button>
@@ -148,17 +162,6 @@ const ProductListing = () => {
                     >
                         Reset
                     </Button>
-                    {/* <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            confirm({ closeDropdown: false });
-                            setSearchText((selectedKeys as string[])[0]);
-                            setSearchedColumn(dataIndex);
-                        }}
-                    >
-                        Filter
-                    </Button> */}
                     <Button
                         type="link"
                         size="small"
@@ -174,11 +177,12 @@ const ProductListing = () => {
         filterIcon: (filtered: boolean) => (
             <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex]
-                .toString()
-                .toLowerCase()
-                .includes((value as string).toLowerCase()),
+        onFilter: (value, record) => {
+            const recordValue = record[dataIndex];
+            return recordValue
+                ? recordValue.toString().toLowerCase().includes((value as string).toLowerCase())
+                : false; // Handle null or undefined cases safely
+        },
         filterDropdownProps: {
             onOpenChange(open) {
                 if (open) {
