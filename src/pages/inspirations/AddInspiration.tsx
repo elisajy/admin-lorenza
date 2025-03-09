@@ -1,11 +1,11 @@
 import { Button, Collapse, CollapseProps, Form, Upload } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
 import PreviewImage from "../../shared/PreviewImage";
-import TextEditor from "../../shared/TextEditor";
 import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem } from "../utils/FormItems";
+import QuillTextEditor from "../../shared/QuillTextEditor";
 
 const AddInspiration = () => {
     const pageTitle = 'New Inspiration'
@@ -136,7 +136,7 @@ const AddInspiration = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
+                            <QuillTextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
                         </Form.Item>
 
                         <br />

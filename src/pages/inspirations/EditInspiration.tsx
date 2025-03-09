@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../hooks/layout/useNotification";
 import { handleImagePreview } from "../../shared/helpers/handle-image-preview.helper";
 import PreviewImage from "../../shared/PreviewImage";
-import TextEditor from "../../shared/TextEditor";
-import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem, getUploadFormItem } from "../utils/FormItems";
+import { getInputFormItem, getTextAreaFormItem, getLimitUploadFormItem } from "../utils/FormItems";
+import QuillTextEditor from "../../shared/QuillTextEditor";
 
 const EditInspiration = () => {
     const pageTitle = 'Edit Inspiration'
@@ -167,7 +167,7 @@ const EditInspiration = () => {
                         className="form-box"
                     >
                         <Form.Item name='content'>
-                            <TextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
+                            <QuillTextEditor className={'para-editor'} routeName={'/upload-inspirations-images'} setEditorValue={setEditorValue} editorValue={editorValue}/>
                         </Form.Item>
 
                         <br />
