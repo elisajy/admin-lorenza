@@ -86,11 +86,25 @@ const EditProject = () => {
             });
     };
 
+    const formatEditorListData = (html: string) => {
+        let formatted = html;
+        // Convert <ol> to <ul> only if it contains <li data-list="bullet">
+        formatted = formatted.replace(/<ol([^>]*)>(.*?)<\/ol>/g, (match, attrs, content) => {
+            return content.includes('data-list="bullet"')
+                ? `<ul${attrs} style="padding-left: 1.5em;">${content}</ul>` // Change to <ul>
+                : match; // Keep original <ol>
+        });
+
+        // Ensure all <ul> and <ol> have padding
+        formatted = formatted.replace(/<(ul|ol)([^>]*)>/g, '<$1$2 style="padding-left: 1.5em;">');
+        return formatted;
+    }
+
     const submitForm = () => {
         const formValue = form.getFieldsValue();
         const dataBody = {
             path: formValue.path,
-            content: editorValue,
+            content: formatEditorListData(editorValue),
             description: formValue.description,
             title: formValue.title
         }

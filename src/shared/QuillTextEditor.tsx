@@ -78,8 +78,7 @@ const QuillTextEditor: React.FC<Props> = ({
 
             // Add text-change event listener to handle editor content changes
             quill.on("text-change", () => {
-                const editorContent = quill.root.innerHTML;
-                // const editorContent = quill.getSemanticHTML();
+                let editorContent = quill.root.innerHTML;
                 setEditorValue(editorContent);
             });
 
@@ -87,11 +86,25 @@ const QuillTextEditor: React.FC<Props> = ({
         }
 
         // Only update the editor content if the value changes
-        if (quillInstance.current && editorValue !== quillInstance.current.root.innerHTML) {
-            quillInstance.current.root.innerHTML = editorValue;
+        const latestValue = editorValue && editorValue.length > 0 ? formatEditorListData(editorValue) : editorValue;
+        if (quillInstance.current && latestValue !== quillInstance.current.root.innerHTML) {
+            quillInstance.current.root.innerHTML = latestValue;
         }
 
     }, [editorValue, setEditorValue]);
+
+    const formatEditorListData = (html: string) => {
+        let formatted = html;
+        // Convert <ul> to <ol> only if it contains <li data-list="bullet">
+        // Due to Quill@2.0.3 couldn't display <ul> object
+        formatted = formatted.replace(/<ul([^>]*)>(.*?)<\/ul>/g, (match, attrs, content) => {
+            return content.includes('data-list="bullet"')
+                ? `<ol${attrs}>${content}</ol>` // Change to <ol>
+                : match; // Keep original <ol>
+        });
+
+        return formatted;
+    }
 
     // Handle image upload
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
