@@ -1,8 +1,9 @@
 import { Button, Card, Form } from "antd";
-import { getInputFormItem, getSelectFormItem, getTextAreaFormItem, getInputNumberFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getSelectFormItem, getInputNumberFormItem } from "../../utils/FormItems";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
+import TextEditorWithoutImage from "../../../shared/TextEditorWithoutImage";
 
 const EditFAQ = () => {
     const pageTitle = 'Edit FAQ Question'
@@ -10,6 +11,7 @@ const EditFAQ = () => {
     const { id } = useParams<{ id: string }>();
     const [form] = Form.useForm();
     const [faqTypeList, setFAQTypeList] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
 
     useEffect(() => {
@@ -42,16 +44,16 @@ const EditFAQ = () => {
                         'question': data.question,
                         'answer': data.answer,
                         'sequence': data.sequence
-                    })
-                }
-                );
+                    });
+                    setEditorValue(data.answer);
+                });
         } catch (error) {
             console.error("Error fetching FAQ question:", error);
         }
     }, []);
 
     const submitForm = () => {
-        const formValue = form.getFieldsValue();
+        const formValue = { ...form.getFieldsValue(), answer: editorValue };
         fetch(`${import.meta.env.VITE_API_KEY}/update-faq-question`, {
             method: 'POST',
             headers: {
@@ -97,8 +99,10 @@ const EditFAQ = () => {
                             }
                             {getInputNumberFormItem('Sequence', "sequence", 'Please fill in sequence.')}
                             {getInputFormItem('FAQ Question', "question", 'Please fill in the FAQ Question.')}
-                            {getTextAreaFormItem('FAQ Answer', "answer", 'Please fill in the FAQ Answer.', 8)}
-
+                            <label>FAQ Description</label>
+                            <Form.Item name='answer' style={{ marginBottom: '0.5rem' }}>
+                                <TextEditorWithoutImage className={'faq-editor-small'} editorValue={editorValue} setEditorValue={setEditorValue} />
+                            </Form.Item>
                         </Form>
                     </div>
                 </div>

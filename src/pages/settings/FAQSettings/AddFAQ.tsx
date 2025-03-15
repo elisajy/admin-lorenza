@@ -1,14 +1,16 @@
 import { Button, Card, Form } from "antd";
 import { useEffect, useState } from "react";
-import { getInputFormItem, getSelectFormItem, getTextAreaFormItem, getInputNumberFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getSelectFormItem, getInputNumberFormItem } from "../../utils/FormItems";
 import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
+import TextEditorWithoutImage from "../../../shared/TextEditorWithoutImage";
 
 const AddFAQ = () => {
     const pageTitle = 'Add FAQ Question'
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [faqTypeList, setFAQTypeList] = useState<any>();
+    const [editorValue, setEditorValue] = useState<any>();
     const { setSuccessNotification, setErrorNotification } = useNotification();
 
     useEffect(() => {
@@ -33,7 +35,7 @@ const AddFAQ = () => {
 
 
     const submitForm = () => {
-        const formValue = form.getFieldsValue();
+        const formValue = { ...form.getFieldsValue(), answer: editorValue };
         fetch(`${import.meta.env.VITE_API_KEY}/add-faq-question`, {
             method: 'POST',
             headers: {
@@ -76,8 +78,10 @@ const AddFAQ = () => {
                             }
                             {getInputNumberFormItem('Sequence', "sequence", 'Please fill in sequence.')}
                             {getInputFormItem('FAQ Title', "question", 'Please fill in the FAQ Title.')}
-                            {getTextAreaFormItem('FAQ Description', "answer", 'Please fill in the FAQ Description.', 6)}
-
+                            <label>FAQ Description</label>
+                            <Form.Item name='answer' style={{ marginBottom: '0.5rem' }}>
+                                <TextEditorWithoutImage className={'faq-editor-small'} editorValue={editorValue} setEditorValue={setEditorValue} />
+                            </Form.Item>
                         </Form>
                     </div>
                 </div>
