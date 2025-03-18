@@ -25,99 +25,60 @@ const MenuInfo = ({ form, data, setTableNameArr, tableNameArr, setSelectedTableN
     const loadData = (key: string) => {
         setTableNameArr([]);
         setSelectedTableName(key);
-        if (key === 'categories') {
-            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: any = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    setTableNameArr(array);
-                }
-                );
+        let apiPath = '';
+        switch (key) {
+            case 'categories':
+                apiPath = 'main-categories-no-sub';
+                break;
+            case 'tags':
+                apiPath = 'main-tags-no-sub';
+                break;
+            case 'sizes':
+                apiPath = 'sizes-no-sub';
+                break;
+            case 'finishes':
+                apiPath = 'finishes-no-sub';
+                break;
+            case 'colors':
+                apiPath = 'colors-no-sub';
+                break;
+            default:
+                apiPath = 'main-categories-no-sub';
+                break;
+        }
 
-            fetch(`${import.meta.env.VITE_API_KEY}/main-categories-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: any = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    setChildArray(array);
-                }
-                );
-        } else if (key === 'sizes') {
+        fetch(`${import.meta.env.VITE_API_KEY}/${apiPath}`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: key === 'sizes' ? x.value : x.name, label: key === 'sizes' ? x.value : x.name, id: x.id }
+                    )
+                })
+                setTableNameArr(array);
+            }
+            );
+
+        fetch(`${import.meta.env.VITE_API_KEY}/${apiPath}`)
+            .then((response) => response.json())
+            .then((data) => {
+                let array: { val: any; label: any; id: any }[] = [];
+                data.map((x: any) => {
+                    array.push(
+                        { val: key === 'sizes' ? x.value : x.name, label: key === 'sizes' ? x.value : x.name, id: x.id }
+                    )
+                })
+                setChildArray(array);
+            }
+            );
+
+        if (key === 'sizes') {
             form.setFieldValue('menuName', 'Sizes');
-            fetch(`${import.meta.env.VITE_API_KEY}/all-sizes`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: { val: any; label: any; id: any }[] = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.value, label: x.name, id: x.id }
-                        )
-                    })
-                    setTableNameArr(array);
-                }
-                );
         } else if (key === 'finishes') {
             form.setFieldValue('menuName', 'Finishes');
-            fetch(`${import.meta.env.VITE_API_KEY}/all-finishes`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: { val: any; label: any; id: any }[] = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name, id: x.id }
-                        )
-                    })
-                    setTableNameArr(array);
-                }
-                );
-        } else if (key === 'tags') {
-            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: { val: any; label: any; }[] = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    setTableNameArr(array);
-                }
-                );
-            fetch(`${import.meta.env.VITE_API_KEY}/main-tags-no-sub`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: any = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    setChildArray(array);
-                }
-                );
         } else if (key === 'colors') {
             form.setFieldValue('menuName', 'Colors');
-            fetch(`${import.meta.env.VITE_API_KEY}/all-colors`)
-                .then((response) => response.json())
-                .then((data) => {
-                    let array: { val: any; label: any; }[] = [];
-                    data.map((x: any) => {
-                        array.push(
-                            { val: x.name, label: x.name }
-                        )
-                    })
-                    setTableNameArr(array);
-                }
-                );
         }
     };
 
