@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import Quill from "quill";
+import QuillResizeImage from "quill-resize-image";
+import QuillTableBetter from "quill-table-better";
 import "quill/dist/quill.snow.css";
 import "quill-table-better/dist/quill-table-better.css";
-import QuillResizeImage from 'quill-resize-image';
-import QuillTableBetter from "quill-table-better";
-import './TextEditor.less';
+import "./TextEditor.less";
 
 type Props = {
     routeName: string;
@@ -42,9 +42,10 @@ const QuillTextEditor: React.FC<Props> = ({
                             [{ header: [1, 2, false] }],
                             ["bold", "italic", "underline", "strike", "blockquote"],
                             [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+                            [{ color: [] }, { background: [] }, { align: [] }],
                             ["link", "image"],
-                            ["clean"],
                             ["table-better"],
+                            ["clean"],
                         ],
                         handlers: {
                             image: () => fileInputRef.current?.click(),
