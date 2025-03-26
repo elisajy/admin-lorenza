@@ -13,6 +13,7 @@ const EditBanner = () => {
     const [form] = Form.useForm();
     const { setSuccessNotification, setErrorNotification } = useNotification();
     const [bannerImage, setBannerImage] = useState<any>();
+    const [bannerMobileImage, setBannerMobileImage] = useState<any>();
     const [displayImg, setDisplayImg] = useState({
         previewVisible: false, previewImage: '', previewTitle: ''
     });
@@ -32,6 +33,14 @@ const EditBanner = () => {
                             name: `image_${id}`,
                         },
                     ],
+                    mobileImageUrl: data.mobileImageUrl ? [
+                        {
+                            uid: "-3",
+                            status: "done",
+                            url: data.mobileImageUrl,
+                            name: `mobile_image_${id}`,
+                        },
+                    ] : [],
                 })
             }
             );
@@ -59,6 +68,15 @@ const EditBanner = () => {
         return e && e.fileList;
     };
 
+    //upload file
+    const normFileMobile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        setBannerMobileImage(e.file);
+        return e && e.fileList;
+    };
+
     // Display image preview
     const handlePreview = async (file: any) => {
         file = await handleImagePreview(file);
@@ -69,11 +87,11 @@ const EditBanner = () => {
         });
     };
 
-    const uploadImage = async (file: File, responseId: any) => {
+    const uploadImage = async (file: File, responseId: any, type: string) => {
         const formData = new FormData();
         formData.append('image', file);  // 'image' is the field name expected by the server
 
-        fetch(`${import.meta.env.VITE_API_KEY}/upload-home-banner/${responseId}`, {
+        fetch(`${import.meta.env.VITE_API_KEY}/upload-home-banner/${responseId}/${type}`, {
             method: 'POST',
             body: formData,  // Sending the image data
         })
@@ -114,8 +132,12 @@ const EditBanner = () => {
                 if (response.status === 204) {
                     setSuccessNotification('Update Successful!');
                     if (bannerImage !== undefined) {
-                        uploadImage(bannerImage, id)
-                    } else {
+                        uploadImage(bannerImage, id, "normal");
+                    }
+                    if (bannerMobileImage !== undefined) {
+                        uploadImage(bannerMobileImage, id, "mobile");
+                    }
+                    if (!bannerImage && !bannerMobileImage) {
                         navigate('/banners');
                     }
                 }
@@ -157,6 +179,12 @@ const EditBanner = () => {
                             form={form}
                             className="form-box">
                             {getUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType, false)}
+                        </Form>
+                        <Form
+                            layout="vertical"
+                            form={form}
+                            className="form-box">
+                            {getUploadFormItem('mobileImageUrl', 'Banner Mobile Image', normFileMobile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>
