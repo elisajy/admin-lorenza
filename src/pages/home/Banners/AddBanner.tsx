@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import PreviewImage from "../../../shared/PreviewImage";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
-import { getInputFormItem, getInputNumberFormItem, getUploadFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getInputNumberFormItem, getLimitUploadFormItem } from "../../utils/FormItems";
 
 const AddBanner = () => {
     const pageTitle = 'New Banner'
@@ -85,6 +85,10 @@ const AddBanner = () => {
             return setErrorNotification('Please ensure that image is uploaded.');
         }
 
+        if ((formValue.mobileImage === undefined) || (formValue.mobileImage && formValue.mobileImage.length === 0)) {
+            return setErrorNotification('Please ensure that mobile image is uploaded.');
+        }
+
         const dataBody = {
             name: formValue.name,
             sequence: formValue.sequence,
@@ -142,13 +146,13 @@ const AddBanner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('image', 'Banner Image', normFile, handlePreview, checkFileType, false)}
+                            {getLimitUploadFormItem('image', 'Banner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                         <Form
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('mobile-image', 'Banner Mobile Image', normFileMobile, handlePreview, checkFileType, false)}
+                            {getLimitUploadFormItem('mobileImage', 'Banner Mobile Image', normFileMobile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>

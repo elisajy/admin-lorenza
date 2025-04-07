@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useNotification from "../../../hooks/layout/useNotification";
 import PreviewImage from "../../../shared/PreviewImage";
 import { handleImagePreview } from "../../../shared/helpers/handle-image-preview.helper";
-import { getInputFormItem, getInputNumberFormItem, getUploadFormItem } from "../../utils/FormItems";
+import { getInputFormItem, getInputNumberFormItem, getLimitUploadFormItem } from "../../utils/FormItems";
 
 const EditBanner = () => {
     const pageTitle = 'Edit Banner'
@@ -178,13 +178,13 @@ const EditBanner = () => {
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType, false)}
+                            {getLimitUploadFormItem('imageUrl', 'Banner Image', normFile, handlePreview, checkFileType, false)}
                         </Form>
                         <Form
                             layout="vertical"
                             form={form}
                             className="form-box">
-                            {getUploadFormItem('mobileImageUrl', 'Banner Mobile Image', normFileMobile, handlePreview, checkFileType, false)}
+                            {getLimitUploadFormItem('mobileImageUrl', 'Banner Mobile Image', normFileMobile, handlePreview, checkFileType, false)}
                         </Form>
                     </div>
                 </div>
